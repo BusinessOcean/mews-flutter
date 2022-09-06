@@ -25,15 +25,21 @@ class OptimusInputFormField extends FormField<String> {
     bool autocorrect = true,
     bool hasBorders = true,
     bool isRequired = false,
+    Widget? leading,
     Widget? suffix,
     Widget? prefix,
+    Widget? trailing,
     Key? inputKey,
     bool readOnly = false,
     bool? showCursor,
     VoidCallback? onTap,
     TextAlign textAlign = TextAlign.start,
+    TextCapitalization textCapitalization = TextCapitalization.none,
     Widget? caption,
     Widget? secondaryCaption,
+    Brightness? keyboardAppearance,
+    bool enableIMEPersonalizedLearning = false,
+    bool enableSuggestions = true,
   })  : assert(
           initialValue == null || controller == null,
           'Provide either initial value or controller',
@@ -68,15 +74,21 @@ class OptimusInputFormField extends FormField<String> {
               autocorrect: autocorrect,
               hasBorders: hasBorders,
               isRequired: isRequired,
-              suffix: suffix,
+              leading: leading,
               prefix: prefix,
+              suffix: suffix,
+              trailing: trailing,
               inputKey: inputKey,
               readOnly: readOnly,
               showCursor: showCursor,
               onTap: onTap,
               textAlign: textAlign,
+              textCapitalization: textCapitalization,
               caption: caption,
               secondaryCaption: secondaryCaption,
+              keyboardAppearance: keyboardAppearance,
+              enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+              enableSuggestions: enableSuggestions,
             );
           },
         );
@@ -92,7 +104,8 @@ class _InputFormFieldState extends FormFieldState<String> {
 
   TextEditingController get _effectiveController =>
       widget.controller ??
-      _controller!; // ignore: avoid-non-null-assertion, _controller would be initialized at this point
+      _controller!; // ignore: avoid-non-null-assertion, _controller would be
+  // initialized at this point
 
   @override
   OptimusInputFormField get widget => super.widget as OptimusInputFormField;

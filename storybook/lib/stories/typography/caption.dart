@@ -4,7 +4,7 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story captionStory = Story(
-  name: 'Typography/Caption',
+  name: 'General/Typography/Caption',
   builder: (context) {
     final k = context.knobs;
     final variation = k.options(
@@ -13,9 +13,18 @@ final Story captionStory = Story(
       options: variationOptions,
     );
 
+    final align = k.options(
+      label: 'Align',
+      options: TextAlign.values.toOptions(),
+      initial: null,
+    );
+
     return OptimusCaption(
       variation: variation,
-      child: Text(k.text(label: 'Caption', initial: 'Caption')),
+      align: align,
+      child: Text(
+        k.text(label: 'Caption', initial: 'Caption'),
+      ),
     );
   },
 );

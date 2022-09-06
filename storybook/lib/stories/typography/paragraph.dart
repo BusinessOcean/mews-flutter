@@ -4,13 +4,19 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story paragraphStory = Story(
-  name: 'Typography/Paragraph',
+  name: 'General/Typography/Paragraph',
   builder: (context) {
     final k = context.knobs;
     final variation = k.options(
       label: 'Variation',
       initial: Variation.variationNormal,
       options: variationOptions,
+    );
+
+    final align = k.options(
+      label: 'Align',
+      options: TextAlign.values.toOptions(),
+      initial: null,
     );
 
     return Center(
@@ -20,10 +26,12 @@ final Story paragraphStory = Story(
         children: [
           OptimusParagraph(
             variation: variation,
+            align: align,
             child: Text(k.text(label: 'Paragraph', initial: 'Paragraph')),
           ),
           OptimusParagraphSmall(
             variation: variation,
+            align: align,
             child: Text(
               k.text(label: 'Small Paragraph', initial: 'Small Paragraph'),
             ),

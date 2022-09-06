@@ -11,12 +11,15 @@ import 'package:storybook/stories/chat/bubble.dart';
 import 'package:storybook/stories/chat/chat.dart';
 import 'package:storybook/stories/checkbox.dart';
 import 'package:storybook/stories/checkbox_group.dart';
+import 'package:storybook/stories/checkbox_nested.dart';
 import 'package:storybook/stories/date_time_field.dart';
 import 'package:storybook/stories/dialog.dart';
 import 'package:storybook/stories/form/form_story.dart';
 import 'package:storybook/stories/icon.dart';
 import 'package:storybook/stories/icon_list.dart';
 import 'package:storybook/stories/input.dart';
+import 'package:storybook/stories/link/inline_link.dart';
+import 'package:storybook/stories/link/standalone_link.dart';
 import 'package:storybook/stories/list/expanded_list.dart';
 import 'package:storybook/stories/list/list_tile.dart';
 import 'package:storybook/stories/loader.dart';
@@ -32,7 +35,6 @@ import 'package:storybook/stories/select_input.dart';
 import 'package:storybook/stories/slidable.dart';
 import 'package:storybook/stories/spacing.dart';
 import 'package:storybook/stories/stack.dart';
-import 'package:storybook/stories/standalone_link.dart';
 import 'package:storybook/stories/step_bar.dart';
 import 'package:storybook/stories/tabs.dart';
 import 'package:storybook/stories/tags.dart';
@@ -65,6 +67,7 @@ class MyApp extends StatelessWidget {
           selectInputStory,
           checkbox,
           checkboxGroup,
+          checkboxNestedGroup,
           inputStory,
           searchFieldStory,
           numberPickerStory,
@@ -101,7 +104,8 @@ class MyApp extends StatelessWidget {
           highlightStory,
           chatStory,
           chatBubbleStory,
-          link,
+          standaloneLink,
+          inlineLink,
           loaderStory,
           dateTimeFieldStory,
           notificationStory,
