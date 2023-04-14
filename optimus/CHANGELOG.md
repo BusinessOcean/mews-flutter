@@ -1,3 +1,21 @@
+## 0.21.0
+
+> Note: This release has breaking changes.
+
+ - **FEAT**: [RND-132138] Make new icons a secondary option (#280).
+ - **FEAT**: [RND-126798] Implement new elevations and border radiuses for mobile (#277).
+ - **BREAKING** **FEAT**: [RND-126039] Additional changes for date input field (#276).
+ - **BREAKING** **FEAT**: [RND-126802] Implement new icons for mobile (#278).
+
+## 0.20.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**: [RND-124891] Date picker not taking input on Android (#271).
+ - **FIX**: [RND-123298] Use nearest Overlay rather than root (#270).
+ - **FIX**: [RND-120913] OptimusSelectFormField not opening when tapping on the chevron (#267).
+ - **BREAKING** **FEAT**: [RND-104009] Update button component so it reflects design (#268).
+
 ## 0.19.0+1
 
  - **FIX**: [RND-118867] Fix Exception in OptimusDropdownButton (#263).

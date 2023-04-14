@@ -22,9 +22,10 @@ class OptimusDateInputField extends StatefulWidget {
     this.secondaryCaption,
     this.size = OptimusWidgetSize.large,
     this.isEnabled = true,
-    this.initialValue,
+    this.value,
     this.isClearAllEnabled = false,
     this.onChanged,
+    this.textInputAction,
     this.isRequired = false,
     this.focusNode,
     this.onTap,
@@ -36,14 +37,16 @@ class OptimusDateInputField extends StatefulWidget {
   /// Function to be called when the user submits the form.
   final ValueChanged<DateTime?>? onSubmitted;
 
-  /// The initial value of the input.
-  final DateTime? initialValue;
+  /// The value of the input.
+  final DateTime? value;
 
   /// The widget size. By default [OptimusWidgetSize.large].
   final OptimusWidgetSize size;
 
   /// {@macro flutter.widgets.editableText.onChanged}
   final ValueChanged<DateTime?>? onChanged;
+
+  final TextInputAction? textInputAction;
 
   /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode;
@@ -64,34 +67,38 @@ class OptimusDateInputField extends StatefulWidget {
 
 class _OptimusDateInputFieldState extends State<OptimusDateInputField>
     with ThemeGetter {
-  late StyledInputController _styleController;
+  StyledInputController? _styleController;
   String _previousValue = '';
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  StyledInputController get _controller =>
+      _styleController ??= StyledInputController(
+        text: _formatValue(widget.value),
+        inputStyle: _inputStyle,
+        placeholderStyle: _placeholderStyle,
+      );
 
-    _styleController = StyledInputController(
-      text: _initialText,
-      placeholderStyle: theme.getPlaceholderStyle(widget.size),
-      inputStyle: theme.getTextInputStyle(widget.size),
-    );
-  }
+  TextStyle get _placeholderStyle => theme.getPlaceholderStyle(widget.size);
+
+  TextStyle get _inputStyle => theme.getTextInputStyle(widget.size);
 
   @override
   void didUpdateWidget(covariant OptimusDateInputField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.format.pattern != widget.format.pattern ||
+    if (oldWidget.value != widget.value) {
+      _updateControllerValue(widget.value);
+    } else if (oldWidget.format.pattern != widget.format.pattern ||
         oldWidget.format.locale != widget.format.locale) {
-      final inputDate = _getDateTime(oldWidget.format, _styleController.text);
-
-      if (inputDate != null) {
-        final placeholderValue = _formatOutput(inputDate);
-        _styleController.text = placeholderValue;
-      } else {
-        _styleController.text = '';
-      }
+      final oldDate = _getDateTime(oldWidget.format, _controller.text);
+      _updateControllerValue(oldDate);
     }
+  }
+
+  void _updateControllerValue(DateTime? newValue) {
+    final formattedValue = _formatValue(newValue);
+    _controller
+      ..text = formattedValue
+      ..selection = TextSelection.collapsed(offset: formattedValue.length);
+    _previousValue = _controller.text;
   }
 
   DateTime? _getDateTime(DateFormat format, String value) {
@@ -107,16 +114,12 @@ class _OptimusDateInputFieldState extends State<OptimusDateInputField>
     return result;
   }
 
-  String? get _initialText {
-    final value = widget.initialValue;
-    if (value != null) {
-      return _formatOutput(value);
-    }
-  }
+  String _formatValue(DateTime? value) =>
+      value != null ? _formatOutput(value) : '';
 
   String _onChanged(String value) {
-    if (_previousValue != value) {
-      final result = _styleController.isInputComplete
+    if (_previousValue != value || value.isEmpty) {
+      final result = _controller.isInputComplete
           ? _getDateTime(widget.format, value)
           : null;
       widget.onChanged?.call(result);
@@ -181,7 +184,8 @@ class _OptimusDateInputFieldState extends State<OptimusDateInputField>
 
   @override
   void dispose() {
-    _styleController.dispose();
+    _styleController?.dispose();
+
     super.dispose();
   }
 
@@ -191,12 +195,13 @@ class _OptimusDateInputFieldState extends State<OptimusDateInputField>
         caption: widget.caption,
         isEnabled: widget.isEnabled,
         isClearEnabled: widget.isClearAllEnabled,
+        textInputAction: widget.textInputAction,
         secondaryCaption: widget.secondaryCaption,
         placeholder: _placeholder,
-        controller: _styleController,
+        controller: _controller,
         error: widget.error,
         onSubmitted: _handleSubmitted,
-        onChanged: widget.onChanged != null ? _onChanged : null,
+        onChanged: _onChanged,
         keyboardType: TextInputType.number,
         isRequired: widget.isRequired,
         onTap: widget.onTap,

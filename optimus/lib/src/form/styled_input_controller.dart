@@ -4,10 +4,16 @@ import 'package:flutter/widgets.dart';
 /// text input field.
 class StyledInputController extends TextEditingController {
   StyledInputController({
-    String? text,
+    required String text,
     required this.inputStyle,
     required this.placeholderStyle,
-  }) : super(text: text);
+  }) : super.fromValue(
+          // workaround for the issue with the cursor position on Android
+          TextEditingValue(
+            text: text,
+            selection: TextSelection.collapsed(offset: text.length),
+          ),
+        );
 
   /// The style to use for the user entered part.
   final TextStyle inputStyle;
