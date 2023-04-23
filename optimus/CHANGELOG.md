@@ -1,3 +1,51 @@
+## 0.24.2
+
+ - **FIX**: [RND-169480] Fix clearAll button not reacting in the OptimusSearch (#336).
+ - **FEAT**: [RND-164806] Add OptimusDivider (#335).
+ - **FEAT**: [RND-165619] Add OptimusTooltipWrapper (#333).
+
+## 0.24.1
+
+ - **FEAT**: [RND-168345] Updated OptimusSearch (#332).
+ - **FEAT**: [RND-164809] Update OptimusSegmentedControl (#331).
+ - **FEAT**: [RND-162272] Added OptimusTooltip.
+
+## 0.24.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: Revert changes to `OptimusListTile` and move changes to `OptimusNavListTile`. (#326).
+ - **REFACTOR**: Bump mews_pedantic to 0.13.0 (#319).
+ - **FIX**: [RND-164336] Fixed Hero transition bug in Step Bar.
+ - **FIX**: [RND-164339] Fixed `OptimusStepBar` in the dark mode. (#323).
+ - **FIX**: [RND-163981] Fix icon color in OptimusDateTimeField in dark mode. (#321).
+ - **FIX**: [RND-153737] Fixed pasting inside the date field (#315).
+ - **FEAT**: [RND-162130] Added a dialogue variation without the content (#317).
+ - **BREAKING** **FEAT**: [RND-124950] Update OptimusListTile (#320).
+ - **BREAKING** **FEAT**: [RND-159990] Updated icons library (#316).
+
+## 0.23.0
+
+> Note: This release has breaking changes.
+
+ - **FEAT**: [RND-142516] Updated button colors for the dark theme (#306).
+ - **FEAT**: [RND-158539] Updated icons library (#304).
+ - **BREAKING** **REFACTOR**: Update to Flutter 3.7.
+
+## 0.22.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**: [RND-131920] Fixed null exception in the dropdown (#296).
+ - **FIX**: [RND-148068] Fix tags vertical alignment (#295).
+ - **FEAT**: [RND-132392] Update elevation values (#294).
+ - **FEAT**: [RND-120947] Replace old semantic colors with new for mobile (#288).
+ - **FEAT**: [RND-146254] Additional changes to the typography (#289).
+ - **FEAT**: [RND-133970] Implement additional icons for mobile (#287).
+ - **FEAT**: [RND-137138] Export borderRadius from mobile package. (#284).
+ - **BREAKING** **FEAT**: [RND-132141] Replace OptimusIcons with new icon library (#285).
+ - **BREAKING** **FEAT**: [RND-134751] Change OpenSans to Inter (#286).
+
 ## 0.21.0
 
 > Note: This release has breaking changes.

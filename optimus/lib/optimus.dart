@@ -11,6 +11,7 @@ export 'optimus_icons.dart';
 export 'src/avatar.dart';
 export 'src/badge.dart';
 export 'src/banner.dart';
+export 'src/border_radius.dart';
 export 'src/borders.dart';
 export 'src/breakpoint.dart';
 export 'src/button/button.dart';
@@ -36,8 +37,10 @@ export 'src/dialogs/dialog.dart';
 export 'src/dialogs/dialog_size.dart';
 export 'src/dialogs/dialog_wrapper.dart';
 export 'src/dialogs/inline_dialog.dart';
+export 'src/divider.dart';
 export 'src/dropdown/dropdown.dart';
 export 'src/dropdown/dropdown_tile.dart';
+export 'src/dropdown/embedded_search.dart';
 export 'src/enabled.dart';
 export 'src/expansion/expansion_tile.dart';
 export 'src/form/checkbox_form_field.dart';
@@ -52,7 +55,9 @@ export 'src/icon.dart';
 export 'src/icon_list.dart';
 export 'src/link/inline_link.dart';
 export 'src/link/standalone_link.dart';
+export 'src/lists/font_variant.dart';
 export 'src/lists/list_tile.dart';
+export 'src/lists/nav_list_tile.dart';
 export 'src/loader/loader.dart';
 export 'src/logo.dart';
 export 'src/notification/notification.dart';
@@ -74,6 +79,8 @@ export 'src/tabs.dart';
 export 'src/tag.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/theme_data.dart';
+export 'src/tooltip/tooltip.dart';
+export 'src/tooltip/tooltip_wrapper.dart';
 export 'src/typography/caption.dart';
 export 'src/typography/fonts.dart';
 export 'src/typography/highlight.dart';
@@ -87,21 +94,21 @@ ThemeData createOptimusMaterialTheme(Brightness brightness) => ThemeData(
       brightness: brightness,
       scaffoldBackgroundColor: OptimusColors(brightness).background,
       primarySwatch: Colors.blue,
-      fontFamily: 'packages/optimus/OpenSans',
+      fontFamily: 'packages/optimus/Inter',
       textTheme: const TextTheme(
-        headline1: baseTextStyle,
-        headline2: baseTextStyle,
-        headline3: baseTextStyle,
-        headline4: baseTextStyle,
-        headline5: baseTextStyle,
-        headline6: baseTextStyle,
-        bodyText1: baseTextStyle,
-        bodyText2: baseTextStyle,
-        subtitle1: baseTextStyle,
-        subtitle2: baseTextStyle,
-        caption: baseTextStyle,
-        button: baseTextStyle,
-        overline: baseTextStyle,
+        displayLarge: baseTextStyle,
+        displayMedium: baseTextStyle,
+        displaySmall: baseTextStyle,
+        headlineMedium: baseTextStyle,
+        headlineSmall: baseTextStyle,
+        titleLarge: baseTextStyle,
+        bodyLarge: baseTextStyle,
+        bodyMedium: baseTextStyle,
+        titleMedium: baseTextStyle,
+        titleSmall: baseTextStyle,
+        bodySmall: baseTextStyle,
+        labelLarge: baseTextStyle,
+        labelSmall: baseTextStyle,
       ),
       cupertinoOverrideTheme: CupertinoThemeData.raw(
         brightness,

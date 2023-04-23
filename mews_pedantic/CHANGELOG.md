@@ -1,3 +1,21 @@
+## 0.13.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Enable additional lint rules.
+
+## 0.12.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **REFACTOR**: Updated to Flutter 3.7.
+
+## 0.11.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: bump code metrics and remove deprecated lints (#301).
+
 ## 0.10.0
 
 > Note: This release has breaking changes.

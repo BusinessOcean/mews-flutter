@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:storybook/stories/avatar.dart';
 import 'package:storybook/stories/badge.dart';
 import 'package:storybook/stories/banner.dart';
@@ -16,6 +17,7 @@ import 'package:storybook/stories/date_input_field.dart';
 import 'package:storybook/stories/date_input_form_field.dart';
 import 'package:storybook/stories/date_time_field.dart';
 import 'package:storybook/stories/dialog.dart';
+import 'package:storybook/stories/divider.dart';
 import 'package:storybook/stories/form/form_story.dart';
 import 'package:storybook/stories/icon.dart';
 import 'package:storybook/stories/icon_list.dart';
@@ -25,6 +27,7 @@ import 'package:storybook/stories/link/inline_link.dart';
 import 'package:storybook/stories/link/standalone_link.dart';
 import 'package:storybook/stories/list/expanded_list.dart';
 import 'package:storybook/stories/list/list_tile.dart';
+import 'package:storybook/stories/list/nav_list_tile.dart';
 import 'package:storybook/stories/loader.dart';
 import 'package:storybook/stories/logo.dart';
 import 'package:storybook/stories/nested_overlays.dart';
@@ -41,6 +44,8 @@ import 'package:storybook/stories/stack.dart';
 import 'package:storybook/stories/step_bar.dart';
 import 'package:storybook/stories/tabs.dart';
 import 'package:storybook/stories/tags.dart';
+import 'package:storybook/stories/tooltip.dart';
+import 'package:storybook/stories/tooltip_wrapper.dart';
 import 'package:storybook/stories/typography/caption.dart';
 import 'package:storybook/stories/typography/highlight.dart';
 import 'package:storybook/stories/typography/label.dart';
@@ -51,70 +56,114 @@ import 'package:storybook_flutter/storybook_flutter.dart';
 
 void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Storybook(
-        plugins: initializePlugins(
-          contentsSidePanel: true,
-          knobsSidePanel: true,
-        ),
-        stories: [
-          formStory,
-          avatarStory,
-          button,
-          dropdownButton,
-          iconButton,
-          splitButton,
-          selectInputStory,
-          checkbox,
-          checkboxGroup,
-          checkboxNestedGroup,
-          inputStory,
-          searchFieldStory,
-          dateInputStory,
-          dateInputFormFieldStory,
-          numberPickerStory,
-          spacingStory,
-          tagStory,
-          bannerStory,
-          wideBannerStory,
-          interactiveTagStory,
-          iconStory,
-          logoStory,
-          supplementaryIconStory,
-          iconListStory,
-          cardStory,
-          nestedCardStory,
-          radioStory,
-          radioGroupStory,
-          dialogStory,
-          nonModalDialogStory,
-          inlineDialogStory,
-          stackStory,
-          stepBarStory,
-          badgeStory,
-          listTileStory,
-          expandedListTileStory,
-          tabs,
-          segmentedControlStory,
-          slidableStory,
-          nestedSelectStory,
-          nestedSearchStory,
-          nestedNonModalDialogStory,
-          titleStory,
-          paragraphStory,
-          labelStory,
-          captionStory,
-          highlightStory,
-          chatStory,
-          chatBubbleStory,
-          standaloneLink,
-          inlineLink,
-          loaderStory,
-          dateTimeFieldStory,
-          notificationStory,
-        ],
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final _theme = _getThemeModeFromPreferences();
+
+  Future<ThemeMode> _getThemeModeFromPreferences() async =>
+      (await SharedPreferences.getInstance())
+          .getString(_keyTheme)
+          .toThemeMode();
+
+  Future<void> _saveThemeMode(ThemeMode themeMode) async =>
+      (await SharedPreferences.getInstance())
+          .setString(_keyTheme, themeMode.name);
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<ThemeMode>(
+        future: _theme,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+              return const CircularProgressIndicator();
+            case ConnectionState.active:
+            case ConnectionState.done:
+              return Storybook(
+                plugins: [
+                  const ContentsPlugin(sidePanel: true),
+                  KnobsPlugin(sidePanel: true),
+                  ThemeModePlugin(
+                    initialTheme: snapshot.data,
+                    onThemeChanged: _saveThemeMode,
+                  ),
+                  DeviceFramePlugin(initialData: const DeviceFrameData()),
+                ],
+                stories: [
+                  formStory,
+                  avatarStory,
+                  button,
+                  dividerStory,
+                  dropdownButton,
+                  iconButton,
+                  splitButton,
+                  selectInputStory,
+                  checkbox,
+                  checkboxGroup,
+                  checkboxNestedGroup,
+                  inputStory,
+                  searchFieldStory,
+                  dateInputStory,
+                  dateInputFormFieldStory,
+                  numberPickerStory,
+                  spacingStory,
+                  tagStory,
+                  bannerStory,
+                  wideBannerStory,
+                  interactiveTagStory,
+                  iconStory,
+                  logoStory,
+                  supplementaryIconStory,
+                  iconListStory,
+                  cardStory,
+                  nestedCardStory,
+                  radioStory,
+                  radioGroupStory,
+                  dialogStory,
+                  nonModalDialogStory,
+                  inlineDialogStory,
+                  stackStory,
+                  stepBarStory,
+                  badgeStory,
+                  listTileStory,
+                  navListTileStory,
+                  expandedListTileStory,
+                  tabs,
+                  segmentedControlStory,
+                  slidableStory,
+                  nestedSelectStory,
+                  nestedSearchStory,
+                  nestedNonModalDialogStory,
+                  titleStory,
+                  paragraphStory,
+                  labelStory,
+                  captionStory,
+                  highlightStory,
+                  chatStory,
+                  chatBubbleStory,
+                  standaloneLink,
+                  inlineLink,
+                  loaderStory,
+                  dateTimeFieldStory,
+                  notificationStory,
+                  tooltipStory,
+                  tooltipWrapperStory,
+                ],
+              );
+          }
+        },
       );
 }
+
+extension on String? {
+  ThemeMode toThemeMode() => ThemeMode.values
+      .firstWhere((e) => e.name == this, orElse: () => ThemeMode.system);
+}
+
+const _keyTheme = 'themeMode';

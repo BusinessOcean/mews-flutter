@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/border_radius.dart';
 import 'package:optimus/src/elevation.dart';
 
 enum OptimusBasicCardVariant {
@@ -157,7 +156,7 @@ class OptimusNestedCard extends StatelessWidget {
     switch (variant) {
       case OptimusNestedCardVariant.emphasized:
         return theme.isDark
-            ? theme.colors.neutral500t48
+            ? theme.colors.neutral400t24
             : theme.colors.neutral500t8;
       case OptimusNestedCardVariant.highlighted:
         return theme.colors.primary500t8;

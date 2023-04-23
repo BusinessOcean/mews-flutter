@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dfunc/dfunc.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -33,7 +35,12 @@ class DropdownSelect<T> extends StatefulWidget {
     this.focusNode,
     this.shouldCloseOnInputTap = false,
     this.showLoader = false,
+    this.isClearEnabled = false,
     this.rootOverlay = false,
+    this.emptyResultPlaceholder,
+    this.embeddedSearch,
+    this.onDropdownShow,
+    this.onDropdownHide,
   }) : super(key: key);
 
   final String? label;
@@ -56,9 +63,14 @@ class DropdownSelect<T> extends StatefulWidget {
   final Widget? trailing;
   final Widget? trailingImplicit;
   final bool showLoader;
+  final bool isClearEnabled;
   final FocusNode? focusNode;
   final bool shouldCloseOnInputTap;
   final bool rootOverlay;
+  final OptimusDropdownEmbeddedSearch? embeddedSearch;
+  final Widget? emptyResultPlaceholder;
+  final VoidCallback? onDropdownShow;
+  final VoidCallback? onDropdownHide;
 
   /// {@macro flutter.widgets.editableText.showCursor}
   final bool? showCursor;
@@ -74,9 +86,13 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
   final _fieldBoxKey = GlobalKey();
 
   FocusNode? _focusNode;
+  TextEditingController? _controller;
 
   FocusNode get _effectiveFocusNode =>
       widget.focusNode ?? (_focusNode ??= FocusNode());
+
+  TextEditingController get _effectiveController =>
+      widget.controller ?? (_controller ??= TextEditingController());
 
   OverlayEntry? _overlayEntry;
 
@@ -84,15 +100,13 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
   void initState() {
     super.initState();
     _effectiveFocusNode.addListener(_onFocusChanged);
-
-    WidgetsBinding.instance.addPostFrameCallback(_afterLayoutBuild);
   }
 
   void _onFocusChanged() {
     if (_effectiveFocusNode.hasFocus) {
-      WidgetsBinding.instance.addPostFrameCallback(_afterLayoutWithShow);
+      _showOverlay();
     } else {
-      setState(_removeOverlay);
+      if (widget.embeddedSearch == null) _removeOverlay();
     }
   }
 
@@ -100,6 +114,7 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
   void dispose() {
     _effectiveFocusNode.removeListener(_onFocusChanged);
     _focusNode?.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -124,51 +139,78 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
       _effectiveFocusNode.unfocus();
 
       return false;
+    } else if (widget.embeddedSearch != null) {
+      final overlay = _overlayEntry;
+      if (overlay != null) {
+        _removeOverlay();
+
+        return false;
+      }
     }
 
     return true;
   }
 
-  void _createOverlay() => _overlayEntry = _createOverlayEntry();
-
   void _showOverlay() {
-    final overlayEntry = _overlayEntry;
-    if (overlayEntry != null) {
-      Overlay.of(context, rootOverlay: widget.rootOverlay)
-          ?.insert(overlayEntry);
-    }
+    if (_overlayEntry != null) return;
+    _overlayEntry = _createOverlayEntry().also((it) {
+      Overlay.of(context, rootOverlay: widget.rootOverlay).insert(it);
+      widget.onDropdownShow?.call();
+    });
   }
 
   void _removeOverlay() {
-    if (_overlayEntry != null) {
-      _overlayEntry?.remove();
-      _overlayEntry = null;
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    widget.onDropdownHide?.call();
+    setState(() {});
+  }
+
+  void _onClearAllTap() {
+    _effectiveController.clear();
+    widget.onTextChanged?.call('');
+  }
+
+  bool? get _isFocused =>
+      widget.embeddedSearch != null ? _overlayEntry != null : null;
+
+  bool get _isClearAllButtonVisible =>
+      widget.isClearEnabled && _effectiveController.text.isNotEmpty;
+
+  Widget? get _clearAllButton =>
+      _isClearAllButtonVisible ? _ClearAllButton(onTap: _onClearAllTap) : null;
+
+  List<Widget> _buildTrailingWidgets() {
+    final trailing = widget.trailing;
+    final trailingImplicit = widget.trailingImplicit;
+    if (widget.isUpdating) {
+      return [const OptimusProgressSpinner()];
+    } else {
+      return [
+        if (trailing != null) trailing,
+        if (trailingImplicit != null) trailingImplicit,
+      ];
     }
-    _effectiveFocusNode.unfocus();
   }
 
-  void _afterLayoutBuild(dynamic _) {
-    if (!mounted) return;
-    _createOverlay();
-  }
+  Widget? get _trailing {
+    final clearAll = _clearAllButton;
+    final trailingWidgets = _buildTrailingWidgets();
+    if (clearAll == null && trailingWidgets.isEmpty) return null;
 
-  void _afterLayoutWithShow(dynamic _) {
-    if (!mounted) return;
-    _createOverlay();
-    _showOverlay();
+    return GestureDetector(
+      onTapDown: (_) => _effectiveFocusNode.requestFocus(),
+      child: OptimusStack(
+        direction: Axis.horizontal,
+        spacing: OptimusStackSpacing.spacing100,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (clearAll != null) clearAll,
+          ...trailingWidgets,
+        ],
+      ),
+    );
   }
-
-  Widget? get _trailing => widget.isUpdating
-      ? const OptimusProgressSpinner()
-      : widget.trailingImplicit != null
-          ? _TrailingStack(
-              trailing: widget.trailing,
-              trailingImplicit: GestureDetector(
-                onTapDown: (_) => _effectiveFocusNode.requestFocus(),
-                child: widget.trailingImplicit,
-              ),
-            )
-          : widget.trailing;
 
   OverlayEntry _createOverlayEntry() => OverlayEntry(
         builder: (context) {
@@ -182,7 +224,6 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
                 _fieldBoxKey.currentContext?.findRenderObject();
             final RenderObject? dropdownRenderObject =
                 context.findRenderObject();
-
             if (dropdownRenderObject is RenderBox &&
                 hitTest(dropdownRenderObject)) {
               // Touch on dropdown shouldn't close overlay
@@ -195,7 +236,7 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
           }
 
           return GestureDetector(
-            key: const Key('OptimusSearchOverlay'),
+            key: const Key('OptimusDropdownOverlay'),
             behavior: HitTestBehavior.translucent,
             onTapDown: onTapDown,
             child: DropdownTapInterceptor(
@@ -204,6 +245,8 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
                 items: widget.items,
                 anchorKey: _fieldBoxKey,
                 onChanged: widget.onChanged,
+                embeddedSearch: widget.embeddedSearch,
+                emptyResultPlaceholder: widget.emptyResultPlaceholder,
               ),
             ),
           );
@@ -216,13 +259,14 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
         child: OptimusInputField(
           leading: widget.leading,
           prefix: widget.prefix,
-          controller: widget.controller,
+          controller: _effectiveController,
           onChanged: widget.onTextChanged,
           isRequired: widget.isRequired,
           label: widget.label,
           placeholder: widget.placeholder,
           placeholderStyle: widget.placeholderStyle,
           focusNode: _effectiveFocusNode,
+          isFocused: _isFocused,
           fieldBoxKey: _fieldBoxKey,
           suffix: widget.suffix,
           trailing: _trailing,
@@ -238,28 +282,53 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
       );
 }
 
-class _TrailingStack extends StatelessWidget {
-  const _TrailingStack({
+class _ClearAllButton extends StatelessWidget {
+  const _ClearAllButton({
     Key? key,
-    required this.trailing,
-    required this.trailingImplicit,
+    required this.onTap,
   }) : super(key: key);
 
-  final Widget? trailing;
-  final Widget trailingImplicit;
+  final GestureTapCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final trailingWidget = trailing;
+    final theme = OptimusTheme.of(context);
 
-    return OptimusStack(
-      direction: Axis.horizontal,
-      spacing: OptimusStackSpacing.spacing100,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (trailingWidget != null) trailingWidget,
-        trailingImplicit,
-      ],
+    return _CustomRawGestureDetector(
+      onTap: onTap,
+      child: Icon(
+        OptimusIcons.clear_selection,
+        size: 24,
+        color: theme.colors.neutral100,
+      ),
     );
+  }
+}
+
+class _CustomRawGestureDetector extends RawGestureDetector {
+  _CustomRawGestureDetector({
+    Key? key,
+    GestureTapCallback? onTap,
+    Widget? child,
+  }) : super(
+          key: key,
+          behavior: HitTestBehavior.opaque,
+          gestures: <Type, GestureRecognizerFactory>{
+            _AllowMultipleGestureRecognizer:
+                GestureRecognizerFactoryWithHandlers<
+                    _AllowMultipleGestureRecognizer>(
+              _AllowMultipleGestureRecognizer.new,
+              (_AllowMultipleGestureRecognizer instance) =>
+                  instance.onTap = onTap,
+            ),
+          },
+          child: child,
+        );
+}
+
+class _AllowMultipleGestureRecognizer extends TapGestureRecognizer {
+  @override
+  void rejectGesture(int pointer) {
+    acceptGesture(pointer);
   }
 }

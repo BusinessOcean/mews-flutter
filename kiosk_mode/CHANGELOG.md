@@ -1,3 +1,13 @@
+## 0.3.0+1
+
+ - **REFACTOR**: Bump mews_pedantic to 0.13.0 (#319).
+
+## 0.3.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **REFACTOR**: Updated to Flutter 3.7.
+
 ## 0.2.2
 
  - **FEAT**: [RND-125108] Implement `startKioskMode` on iOS (#275).

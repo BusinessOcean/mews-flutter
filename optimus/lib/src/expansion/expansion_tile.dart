@@ -8,7 +8,7 @@ const Duration _kExpand = Duration(milliseconds: 200);
 ///
 /// Based on flutter/lib/src/material/expansion_tile.dart
 class OptimusExpansionTile extends StatefulWidget {
-  /// Creates a single-line [ListTile] with a trailing button that expands or
+  /// Creates a single-line [OptimusListTile] with a trailing button that expands or
   /// collapses the tile to reveal or hide the [children]. The
   /// [initiallyExpanded] property must be non-null.
   const OptimusExpansionTile({
@@ -99,7 +99,7 @@ class _OptimusExpansionTileState extends State<OptimusExpansionTile>
     _heightFactor = _controller.drive(_easeInTween);
     _iconTurns = _controller.drive(_halfTween.chain(_easeInTween));
 
-    _isExpanded = (PageStorage.of(context)?.readState(context) ??
+    _isExpanded = (PageStorage.of(context).readState(context) ??
         widget.initiallyExpanded) as bool;
     if (_isExpanded) _controller.value = 1.0;
   }
@@ -123,7 +123,7 @@ class _OptimusExpansionTileState extends State<OptimusExpansionTile>
           });
         });
       }
-      PageStorage.of(context)?.writeState(context, _isExpanded);
+      PageStorage.of(context).writeState(context, _isExpanded);
     });
     widget.onExpansionChanged?.call(_isExpanded);
   }
@@ -150,12 +150,12 @@ class _OptimusExpansionTileState extends State<OptimusExpansionTile>
     );
   }
 
-  Widget _buildListTile() => ListTile(
+  Widget _buildListTile() => OptimusListTile(
         onTap: _handleTap,
-        leading: widget.leading,
+        prefix: widget.leading,
         title: widget.title,
         subtitle: widget.subtitle,
-        trailing: widget.trailing ??
+        suffix: widget.trailing ??
             RotationTransition(
               turns: _iconTurns,
               child: const Icon(Icons.expand_more),

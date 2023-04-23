@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/border_radius.dart';
 import 'package:optimus/src/colors/data_colors.dart';
 import 'package:optimus/src/constants.dart';
 import 'package:optimus/src/typography/presets.dart';
@@ -174,7 +173,7 @@ class _TagState extends State<_Tag> with ThemeGetter {
   Color get _borderColor {
     switch (widget.colorOption) {
       case OptimusColorOption.basic:
-        return theme.isDark ? theme.colors.neutral100 : theme.colors.neutral200;
+        return theme.isDark ? theme.colors.neutral100 : theme.colors.neutral700;
 
       // TODO(VG): can be changed when final dark theme design is ready.
       case OptimusColorOption.plain:
@@ -182,11 +181,11 @@ class _TagState extends State<_Tag> with ThemeGetter {
       case OptimusColorOption.primary:
         return theme.isDark ? theme.colors.primary500 : theme.colors.primary200;
       case OptimusColorOption.success:
-        return theme.isDark ? theme.colors.success500 : theme.colors.success200;
+        return theme.isDark ? theme.colors.success500 : theme.colors.success300;
       case OptimusColorOption.info:
-        return theme.isDark ? theme.colors.info500 : theme.colors.info200;
+        return theme.isDark ? theme.colors.info500 : theme.colors.info300;
       case OptimusColorOption.warning:
-        return theme.isDark ? theme.colors.warning500 : theme.colors.warning200;
+        return theme.isDark ? theme.colors.warning500 : theme.colors.warning300;
       case OptimusColorOption.danger:
         return theme.isDark ? theme.colors.danger500 : theme.colors.danger200;
     }

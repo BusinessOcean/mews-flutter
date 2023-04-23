@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/border_radius.dart';
 import 'package:optimus/src/common/field_error.dart';
 import 'package:optimus/src/common/field_label.dart';
 import 'package:optimus/src/constants.dart';
@@ -13,10 +12,12 @@ class FieldWrapper extends StatefulWidget {
     Key? key,
     this.isEnabled = true,
     required this.focusNode,
+    this.isFocused,
     this.label,
     this.caption,
     this.secondaryCaption,
     this.error,
+    this.errorVariant = OptimusInputErrorVariant.bottomHint,
     this.hasBorders = true,
     this.isRequired = false,
     this.suffix,
@@ -27,10 +28,12 @@ class FieldWrapper extends StatefulWidget {
 
   final bool isEnabled;
   final FocusNode focusNode;
+  final bool? isFocused;
   final String? label;
   final Widget? caption;
   final Widget? secondaryCaption;
   final String? error;
+  final OptimusInputErrorVariant errorVariant;
   final bool hasBorders;
   final bool isRequired;
   final Widget? suffix;
@@ -60,6 +63,9 @@ class _FieldWrapper extends State<FieldWrapper> with ThemeGetter {
     widget.focusNode.removeListener(_onFocusChanged);
     super.dispose();
   }
+
+  bool get _isUsingBottomHint =>
+      widget.errorVariant == OptimusInputErrorVariant.bottomHint;
 
   String get _normalizedError {
     final error = widget.error;
@@ -120,7 +126,7 @@ class _FieldWrapper extends State<FieldWrapper> with ThemeGetter {
                   ),
                 ),
               ),
-              if (_normalizedError.isNotEmpty)
+              if (_isUsingBottomHint && _normalizedError.isNotEmpty)
                 OptimusFieldError(error: _normalizedError),
               if (!widget.hasError && caption != null)
                 OptimusCaption(
@@ -140,6 +146,8 @@ class _FieldWrapper extends State<FieldWrapper> with ThemeGetter {
     setState(() {});
   }
 
+  bool get _isFocused => widget.isFocused ?? widget.focusNode.hasFocus;
+
   Color get _background =>
       theme.isDark ? theme.colors.neutral500 : theme.colors.neutral0;
 
@@ -147,12 +155,15 @@ class _FieldWrapper extends State<FieldWrapper> with ThemeGetter {
       theme.isDark ? theme.colors.neutral0t32 : theme.colors.neutral1000t32;
 
   Color get _borderColor {
-    if (widget.focusNode.hasFocus) return theme.colors.primary;
+    if (_isFocused) return theme.colors.primary;
 
-    return widget.hasError ? theme.colors.danger : theme.colors.neutral100;
+    return widget.hasError ? theme.colors.danger : _inactiveColor;
   }
 
-  Color get _captionColor => widget.focusNode.hasFocus
+  Color get _inactiveColor =>
+      theme.isDark ? theme.colors.neutral200 : theme.colors.neutral100;
+
+  Color get _captionColor => _isFocused
       ? theme.colors.primary
       : theme.isDark
           ? theme.colors.neutral0t64
