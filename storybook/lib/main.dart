@@ -13,14 +13,16 @@ import 'package:storybook/stories/chat/chat.dart';
 import 'package:storybook/stories/checkbox.dart';
 import 'package:storybook/stories/checkbox_group.dart';
 import 'package:storybook/stories/checkbox_nested.dart';
+import 'package:storybook/stories/compact_step_bar.dart';
 import 'package:storybook/stories/date_input_field.dart';
 import 'package:storybook/stories/date_input_form_field.dart';
 import 'package:storybook/stories/date_time_field.dart';
 import 'package:storybook/stories/dialog.dart';
 import 'package:storybook/stories/divider.dart';
 import 'package:storybook/stories/form/form_story.dart';
-import 'package:storybook/stories/icon.dart';
-import 'package:storybook/stories/icon_list.dart';
+import 'package:storybook/stories/icon/icon.dart';
+import 'package:storybook/stories/icon/icon_list.dart';
+import 'package:storybook/stories/icon/icons.dart';
 import 'package:storybook/stories/inline_dialog.dart';
 import 'package:storybook/stories/input.dart';
 import 'package:storybook/stories/link/inline_link.dart';
@@ -57,7 +59,7 @@ import 'package:storybook_flutter/storybook_flutter.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -117,6 +119,7 @@ class _MyAppState extends State<MyApp> {
                   bannerStory,
                   wideBannerStory,
                   interactiveTagStory,
+                  allIconsStory,
                   iconStory,
                   logoStory,
                   supplementaryIconStory,
@@ -130,6 +133,7 @@ class _MyAppState extends State<MyApp> {
                   inlineDialogStory,
                   stackStory,
                   stepBarStory,
+                  compactStepBarStory,
                   badgeStory,
                   listTileStory,
                   navListTileStory,

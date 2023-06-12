@@ -39,7 +39,7 @@ Future<T?> showOptimusDialog<T>({
   bool isDismissible = true,
   bool useRootNavigator = true,
 }) =>
-    showGeneralDialog(
+    showGeneralDialog<T>(
       context: context,
       pageBuilder: (buildContext, animation, secondaryAnimation) =>
           OptimusDialog.modal(
@@ -65,7 +65,7 @@ Future<T?> showOptimusDialog<T>({
 /// a short term task without losing the context of the underlying page.
 class OptimusDialog extends StatelessWidget {
   const OptimusDialog._({
-    Key? key,
+    super.key,
     required this.title,
     required this.content,
     this.contentWrapperBuilder,
@@ -75,7 +75,7 @@ class OptimusDialog extends StatelessWidget {
     this.close,
     this.isDismissible,
     this.position = OptimusDialogPosition.center,
-  }) : super(key: key);
+  });
 
   const OptimusDialog.modal({
     Key? key,
@@ -207,20 +207,22 @@ class OptimusDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = _autoSize(context);
 
-    return Align(
-      alignment: _alignment(context),
-      child: DialogContent(
-        title: title,
-        content: content,
-        actions: actions,
-        type: type,
-        size: size,
-        maxWidth: size.width,
-        spacing: spacing300,
-        margin: MediaQuery.of(context).viewInsets,
-        contentWrapperBuilder: contentWrapperBuilder,
-        isDismissible: isDismissible,
-        close: close,
+    return SafeArea(
+      child: Align(
+        alignment: _alignment(context),
+        child: DialogContent(
+          title: title,
+          content: content,
+          actions: actions,
+          type: type,
+          size: size,
+          maxWidth: size.width,
+          spacing: spacing300,
+          margin: MediaQuery.of(context).viewInsets,
+          contentWrapperBuilder: contentWrapperBuilder,
+          isDismissible: isDismissible,
+          close: close,
+        ),
       ),
     );
   }
@@ -228,9 +230,9 @@ class OptimusDialog extends StatelessWidget {
 
 class OptimusDialogContentPadding extends StatelessWidget {
   const OptimusDialogContentPadding({
-    Key? key,
+    super.key,
     this.child,
-  }) : super(key: key);
+  });
 
   final Widget? child;
 

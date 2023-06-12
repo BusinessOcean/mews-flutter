@@ -10,7 +10,7 @@ import 'package:optimus/src/dropdown/dropdown_tap_interceptor.dart';
 
 class DropdownSelect<T> extends StatefulWidget {
   const DropdownSelect({
-    Key? key,
+    super.key,
     this.label,
     this.placeholder = '',
     this.placeholderStyle,
@@ -41,7 +41,9 @@ class DropdownSelect<T> extends StatefulWidget {
     this.embeddedSearch,
     this.onDropdownShow,
     this.onDropdownHide,
-  }) : super(key: key);
+    this.groupBy,
+    this.groupBuilder,
+  });
 
   final String? label;
   final String placeholder;
@@ -71,6 +73,8 @@ class DropdownSelect<T> extends StatefulWidget {
   final Widget? emptyResultPlaceholder;
   final VoidCallback? onDropdownShow;
   final VoidCallback? onDropdownHide;
+  final Grouper<T>? groupBy;
+  final GroupBuilder? groupBuilder;
 
   /// {@macro flutter.widgets.editableText.showCursor}
   final bool? showCursor;
@@ -94,6 +98,7 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
   TextEditingController get _effectiveController =>
       widget.controller ?? (_controller ??= TextEditingController());
 
+  // ignore: dispose-fields, disposed in _removeOverlay
   OverlayEntry? _overlayEntry;
 
   @override
@@ -103,10 +108,12 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
   }
 
   void _onFocusChanged() {
-    if (_effectiveFocusNode.hasFocus) {
-      _showOverlay();
-    } else {
-      if (widget.embeddedSearch == null) _removeOverlay();
+    if (widget.embeddedSearch == null) {
+      if (_effectiveFocusNode.hasFocus) {
+        _showOverlay();
+      } else {
+        _removeOverlay();
+      }
     }
   }
 
@@ -161,10 +168,15 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
 
   void _removeOverlay() {
     _overlayEntry?.remove();
+    _overlayEntry?.dispose();
     _overlayEntry = null;
     widget.onDropdownHide?.call();
+    _effectiveFocusNode.unfocus();
     setState(() {});
   }
+
+  VoidCallback? get _onTap =>
+      widget.embeddedSearch != null ? _showOverlay : null;
 
   void _onClearAllTap() {
     _effectiveController.clear();
@@ -183,14 +195,13 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
   List<Widget> _buildTrailingWidgets() {
     final trailing = widget.trailing;
     final trailingImplicit = widget.trailingImplicit;
-    if (widget.isUpdating) {
-      return [const OptimusProgressSpinner()];
-    } else {
-      return [
-        if (trailing != null) trailing,
-        if (trailingImplicit != null) trailingImplicit,
-      ];
-    }
+
+    return widget.isUpdating
+        ? [const OptimusProgressSpinner()]
+        : [
+            if (trailing != null) trailing,
+            if (trailingImplicit != null) trailingImplicit,
+          ];
   }
 
   Widget? get _trailing {
@@ -247,6 +258,8 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
                 onChanged: widget.onChanged,
                 embeddedSearch: widget.embeddedSearch,
                 emptyResultPlaceholder: widget.emptyResultPlaceholder,
+                groupBy: widget.groupBy,
+                groupBuilder: widget.groupBuilder,
               ),
             ),
           );
@@ -267,6 +280,7 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
           placeholderStyle: widget.placeholderStyle,
           focusNode: _effectiveFocusNode,
           isFocused: _isFocused,
+          onTap: _onTap,
           fieldBoxKey: _fieldBoxKey,
           suffix: widget.suffix,
           trailing: _trailing,
@@ -283,10 +297,7 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
 }
 
 class _ClearAllButton extends StatelessWidget {
-  const _ClearAllButton({
-    Key? key,
-    required this.onTap,
-  }) : super(key: key);
+  const _ClearAllButton({required this.onTap});
 
   final GestureTapCallback? onTap;
 
@@ -307,11 +318,9 @@ class _ClearAllButton extends StatelessWidget {
 
 class _CustomRawGestureDetector extends RawGestureDetector {
   _CustomRawGestureDetector({
-    Key? key,
     GestureTapCallback? onTap,
-    Widget? child,
+    super.child,
   }) : super(
-          key: key,
           behavior: HitTestBehavior.opaque,
           gestures: <Type, GestureRecognizerFactory>{
             _AllowMultipleGestureRecognizer:
@@ -322,7 +331,6 @@ class _CustomRawGestureDetector extends RawGestureDetector {
                   instance.onTap = onTap,
             ),
           },
-          child: child,
         );
 }
 

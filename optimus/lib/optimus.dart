@@ -1,5 +1,3 @@
-library optimus;
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:optimus/src/colors/colors.dart';
@@ -39,6 +37,7 @@ export 'src/dialogs/dialog_wrapper.dart';
 export 'src/dialogs/inline_dialog.dart';
 export 'src/divider.dart';
 export 'src/dropdown/dropdown.dart';
+export 'src/dropdown/dropdown_group_separator.dart';
 export 'src/dropdown/dropdown_tile.dart';
 export 'src/dropdown/embedded_search.dart';
 export 'src/enabled.dart';
@@ -74,7 +73,9 @@ export 'src/slidable/slidable.dart';
 export 'src/slidable/slide_action.dart';
 export 'src/spacing.dart';
 export 'src/stack.dart';
-export 'src/step_bar.dart';
+export 'src/step_bar/step_bar.dart';
+export 'src/step_bar/step_bar_compact.dart';
+export 'src/step_bar/step_bar_item.dart';
 export 'src/tabs.dart';
 export 'src/tag.dart';
 export 'src/theme/theme.dart';
