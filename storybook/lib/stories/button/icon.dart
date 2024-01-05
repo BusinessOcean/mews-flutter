@@ -4,13 +4,13 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story iconButton = Story(
-  name: 'General/Buttons/Icon button',
+  name: 'Buttons/Icon Button',
   builder: (context) {
     final k = context.knobs;
 
     return SingleChildScrollView(
       child: Column(
-        children: OptimusIconButtonVariant.values
+        children: OptimusButtonVariant.values
             .map(
               (v) => Padding(
                 padding: const EdgeInsets.all(8),

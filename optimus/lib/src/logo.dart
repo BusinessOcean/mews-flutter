@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:optimus/optimus.dart';
 
 /// Mews logo variant.
@@ -58,56 +59,43 @@ class OptimusMewsLogo extends StatelessWidget {
   final OptimusMewsLogoColorVariant colorVariant;
   final OptimusMewsLogoAlignVariant alignVariant;
 
-  Widget get _iconWidget => _NonSquaredIcon(
-        _logoIcon,
-        size: _size,
-        color: _color,
-      );
+  double get _size => switch (sizeVariant) {
+        OptimusMewsLogoSizeVariant.large => 24,
+        OptimusMewsLogoSizeVariant.medium => 16,
+        OptimusMewsLogoSizeVariant.small => 8,
+      };
 
-  IconData get _logoIcon {
-    switch (logoVariant) {
-      case OptimusMewsLogoVariant.wordmark:
-        return OptimusIcons.mews_logo;
-      case OptimusMewsLogoVariant.logomark:
-        return OptimusIcons.mews_logo_small;
-    }
-  }
+  Color get _color => switch (colorVariant) {
+        OptimusMewsLogoColorVariant.black => Colors.black,
+        OptimusMewsLogoColorVariant.white => Colors.white,
+      };
 
-  double get _size {
-    switch (sizeVariant) {
-      case OptimusMewsLogoSizeVariant.large:
-        return 24;
-      case OptimusMewsLogoSizeVariant.medium:
-        return 16;
-      case OptimusMewsLogoSizeVariant.small:
-        return 8;
-    }
-  }
-
-  Color get _color {
-    switch (colorVariant) {
-      case OptimusMewsLogoColorVariant.black:
-        return Colors.black;
-      case OptimusMewsLogoColorVariant.white:
-        return Colors.white;
-    }
-  }
-
-  EdgeInsets get _margin {
-    switch (alignVariant) {
-      case OptimusMewsLogoAlignVariant.topLeft:
-        return EdgeInsets.only(bottom: _size, right: _size);
-      case OptimusMewsLogoAlignVariant.topCenter:
-        return EdgeInsets.fromLTRB(_size, 0, _size, _size);
-      case OptimusMewsLogoAlignVariant.center:
-        return EdgeInsets.all(_size);
-    }
-  }
+  EdgeInsets get _margin => switch (alignVariant) {
+        OptimusMewsLogoAlignVariant.topLeft =>
+          EdgeInsets.only(bottom: _size, right: _size),
+        OptimusMewsLogoAlignVariant.topCenter =>
+          EdgeInsets.fromLTRB(_size, 0, _size, _size),
+        OptimusMewsLogoAlignVariant.center => EdgeInsets.all(_size),
+      };
 
   @override
   Widget build(BuildContext context) => Container(
         margin: _margin,
-        child: _iconWidget,
+        child: switch (logoVariant) {
+          OptimusMewsLogoVariant.logomark => _NonSquaredIcon(
+              OptimusIcons.mews_logo,
+              size: _size,
+              color: _color,
+            ),
+          OptimusMewsLogoVariant.wordmark => SizedBox(
+              height: _size,
+              child: SvgPicture.asset(
+                _logoPath,
+                package: _packageName,
+                colorFilter: ColorFilter.mode(_color, BlendMode.srcIn),
+              ),
+            ),
+        },
       );
 }
 
@@ -120,15 +108,13 @@ class _NonSquaredIcon extends StatelessWidget {
   });
 
   final IconData icon;
-
   final double size;
-
   final Color color;
 
   @override
-  Widget build(BuildContext context) => RichText(
+  Widget build(BuildContext context) => Text.rich(
         overflow: TextOverflow.visible,
-        text: TextSpan(
+        TextSpan(
           text: String.fromCharCode(icon.codePoint),
           style: TextStyle(
             inherit: false,
@@ -140,3 +126,6 @@ class _NonSquaredIcon extends StatelessWidget {
         ),
       );
 }
+
+const _packageName = 'optimus';
+const _logoPath = 'assets/mews_logo.svg';

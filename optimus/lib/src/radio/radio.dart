@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
+import 'package:optimus/src/common/gesture_wrapper.dart';
 import 'package:optimus/src/common/group_wrapper.dart';
 import 'package:optimus/src/typography/presets.dart';
 
@@ -82,82 +83,87 @@ class OptimusRadio<T> extends StatefulWidget {
 
 class _OptimusRadioState<T> extends State<OptimusRadio<T>> with ThemeGetter {
   bool _isHovering = false;
-  bool _isTappedDown = false;
+  bool _isPressed = false;
 
   bool get _isSelected => widget.value == widget.groupValue;
 
-  TextStyle get _labelStyle {
-    final color = theme.colors.defaultTextColor;
-    switch (widget.size) {
-      case OptimusRadioSize.small:
-        return preset200s.copyWith(color: color);
-      case OptimusRadioSize.large:
-        return preset300s.copyWith(color: color);
-    }
-  }
+  Color get _textColor => widget.isEnabled
+      ? theme.tokens.textStaticPrimary
+      : theme.tokens.textDisabled;
 
-  void _onHoverChanged(bool isHovering) {
-    setState(() => _isHovering = isHovering);
-  }
+  TextStyle get _labelStyle => switch (widget.size) {
+        OptimusRadioSize.small => preset200s.copyWith(color: _textColor),
+        OptimusRadioSize.large => preset300s.copyWith(color: _textColor),
+      };
 
-  void _onChanged() {
+  void _handleHoverChanged(bool isHovering) =>
+      setState(() => _isHovering = isHovering);
+
+  void _handlePressedChanged(bool isPressed) =>
+      setState(() => _isPressed = isPressed);
+
+  void _handleChanged() {
     if (!_isSelected) {
       widget.onChanged(widget.value);
     }
   }
 
+  _RadioState get _state {
+    if (!widget.isEnabled) return _RadioState.disabled;
+    if (_isPressed) return _RadioState.active;
+    if (_isHovering) return _RadioState.hover;
+
+    return _RadioState.basic;
+  }
+
   @override
   Widget build(BuildContext context) => GroupWrapper(
         error: widget.error,
-        child: OptimusEnabled(
-          isEnabled: widget.isEnabled,
-          child: MouseRegion(
-            onEnter: (_) => _onHoverChanged(true),
-            onExit: (_) => _onHoverChanged(false),
-            child: GestureDetector(
-              onTap: _onChanged,
-              onTapDown: (_) => setState(() => _isTappedDown = true),
-              onTapUp: (_) => setState(() => _isTappedDown = false),
-              onTapCancel: () => setState(() => _isTappedDown = false),
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: _leadingSize,
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: _RadioCircle(
-                        isSelected: _isSelected,
-                        isActive: _isHovering || _isTappedDown,
-                      ),
+        isEnabled: widget.isEnabled,
+        child: IgnorePointer(
+          ignoring: !widget.isEnabled,
+          child: GestureWrapper(
+            onHoverChanged: _handleHoverChanged,
+            onPressedChanged: _handlePressedChanged,
+            onTap: _handleChanged,
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: _leadingSize,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: _RadioCircle(
+                      state: _state,
+                      isSelected: _isSelected,
                     ),
                   ),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minHeight: _leadingSize,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(width: _leadingSize),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: spacing25,
-                            ),
-                            child: DefaultTextStyle.merge(
-                              style: _labelStyle,
-                              child: widget.label,
-                            ),
+                ),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: _leadingSize,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(width: _leadingSize),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: spacing25,
+                          ),
+                          child: DefaultTextStyle.merge(
+                            style: _labelStyle,
+                            child: widget.label,
                           ),
                         ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -166,41 +172,66 @@ class _OptimusRadioState<T> extends State<OptimusRadio<T>> with ThemeGetter {
 
 class _RadioCircle extends StatelessWidget {
   const _RadioCircle({
+    required this.state,
     required this.isSelected,
-    required this.isActive,
   });
 
+  final _RadioState state;
   final bool isSelected;
-  final bool isActive;
-
-  Color _borderColor(OptimusThemeData theme) => (isSelected || isActive)
-      ? theme.colors.primary500
-      : theme.colors.neutral100;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = OptimusTheme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: spacing100,
-        bottom: spacing100,
-        right: spacing200,
-      ),
-      child: Container(
-        width: 16,
-        height: 16,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            width: isSelected ? 6 : 1,
-            color: _borderColor(theme),
-          ),
-          color: isActive ? theme.colors.primary500t8 : null,
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(
+          top: spacing100,
+          bottom: spacing100,
+          right: spacing200,
         ),
-      ),
-    );
-  }
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 100),
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              width:
+                  isSelected ? _selectedBorder : context.tokens.borderWidth150,
+              color: state.borderColor(context, isSelected: isSelected),
+            ),
+            color: state.circleFillColor(context),
+          ),
+        ),
+      );
+}
+
+enum _RadioState { basic, hover, active, disabled }
+
+extension on _RadioState {
+  Color borderColor(BuildContext context, {required bool isSelected}) =>
+      switch (this) {
+        _RadioState.basic => isSelected
+            ? context.tokens.backgroundInteractivePrimaryDefault
+            : context.tokens.borderInteractiveSecondaryDefault,
+        _RadioState.hover => isSelected
+            ? context.tokens.backgroundInteractivePrimaryHover
+            : context.tokens.borderInteractiveSecondaryHover,
+        _RadioState.active => isSelected
+            ? context.tokens.backgroundInteractivePrimaryActive
+            : context.tokens.borderInteractiveSecondaryActive,
+        _RadioState.disabled => isSelected
+            ? context.tokens.backgroundDisabled
+            : context.tokens.borderDisabled,
+      };
+
+  Color circleFillColor(BuildContext context) => switch (this) {
+        _RadioState.basic ||
+        _RadioState.disabled =>
+          context.tokens.backgroundInteractiveNeutralSubtleDefault,
+        _RadioState.hover =>
+          context.tokens.backgroundInteractiveNeutralSubtleHover,
+        _RadioState.active =>
+          context.tokens.backgroundInteractiveNeutralSubtleActive,
+      };
 }
 
 const double _leadingSize = 32;
+const double _selectedBorder = 6.0;

@@ -1,3 +1,108 @@
+## 0.31.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: Fix linter error.
+ - **REFACTOR**: Fix linter errors.
+ - **BREAKING** **REFACTOR**: Migrate to Flutter 3.16.0.
+
+## 0.30.1
+
+ - **FEAT**: Update text input design (#467).
+
+## 0.30.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: Refactor Toggle (#458).
+ - **REFACTOR**: Refactor SelectInput (#456).
+ - **FEAT**: [UX-332] Add multiselect support (#448).
+ - **FEAT**: [DX-295] Update font (#455).
+ - **BREAKING** **REFACTOR**: Remove OptimusProgressSpinner (#459).
+ - **BREAKING** **FEAT**: [DX-144] Update link design (#461).
+
+## 0.29.1+1
+
+ - **REFACTOR**: Fix linter issues.
+
+## 0.29.1
+
+ - **REFACTOR**: Update Checkbox structure (#444).
+ - **FIX**: Fix embedded search overflow (#443).
+ - **FEAT**: Update Chip gestures (#446).
+
+## 0.29.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**: [UX-283] Fix banner close icon overlapping (#441).
+ - **FIX**: Fix Badge overflowing (#436).
+ - **FEAT**: [UX-264] Update SegmentedControl (#442).
+ - **FEAT**: [UX-140] Update Badge component (#431).
+ - **FEAT**: [UX-257] Update Tooltip (#430).
+ - **BREAKING** **FEAT**: Update rules set (#432).
+ - **BREAKING** **FEAT**: [UX-141] Update OptimusTab component (#439).
+ - **BREAKING** **FEAT**: Move Mews logo out of the icon pack (#427).
+ - **BREAKING** **FEAT**: [UX-136] Update tag component (#425).
+ - **BREAKING** **FEAT**: [UX-138] Update Divider component (#418).
+ - **BREAKING** **FEAT**: [UX-238] Update icons library (#421).
+ - **BREAKING** **FEAT**: Update input style.
+
+## 0.28.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: Fix DCM issues.
+ - **REFACTOR**: Refactor widget getter to standalone widgets (#412).
+ - **REFACTOR**: Extract widgets in dropdown select (#413).
+ - **REFACTOR**: fix dcm issues (#397).
+ - **REFACTOR**: update switch to patterns syntax (#396).
+ - **FEAT**: [UX-137] Add Chip component (#414).
+ - **FEAT**: Add Toggle component (#406).
+ - **FEAT**: Update borders style (#401).
+ - **FEAT**: [RND-177100] Update radio component to use shared colors (#394).
+ - **BREAKING** **FEAT**: Update color tokens (#415).
+ - **BREAKING** **FEAT**: Update Button component (#403).
+ - **BREAKING** **FEAT**: [RND-177099] Update checkbox to use shared colors (#395).
+
+## 0.27.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**: [RND-178412] OptimusAvatar offline mode throwing exception (#381).
+ - **BREAKING** **REFACTOR**: Migrate to Dart 3 (#387).
+
+## 0.26.0+1
+
+ - **REFACTOR**: Change to named constructor (#384).
+
+## 0.26.0
+
+> Note: This release has breaking changes.
+
+ - **FEAT**: [RND-177241] Enable theming using tokens (#372).
+ - **BREAKING** **FIX**: Fix icons mismatch (#382).
+
+## 0.25.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: Fix lint errors.
+ - **FIX**: [RND-164305] Fix OptimusCircleLoader glitch after Flutter 3.7.3 (#368).
+ - **FIX**(optimus): [RND-176636] DropdownButton color not updating after dropdown hides (#360).
+ - **FIX**(optimus): [RND-170692] Dialog is overlapping with screen safe area (#347).
+ - **FIX**(optimus): [RND-174939] Fix focus change on SelectInput (#357).
+ - **FIX**(optimus): [RND-173007] Fix SegmentedControl text overflow (#349).
+ - **FEAT**: [RND-164813] Add grouping support to SelectInput (#367).
+ - **FEAT**: [RND-175747] Output tokens in correct format for mobile (#366).
+ - **FEAT**(optimus): [RND-173002] Update InputForm colors and style (#364).
+ - **FEAT**(optimus): [RND-176793] Add custom content padding to the OptimusListTile (#362).
+ - **FEAT**(optimus): [RND-164749] Add OptimusCompactStepBar (#346).
+ - **FEAT**(storybook): [RND-171375] Add story with all icons (#348).
+ - **FEAT**(optimus): [RND-164814] Add an embedded search to the dropdown (#344).
+ - **FEAT**(optimus): [RND-166993] Add inline input error for the OptimusTextInput (#341).
+ - **BREAKING** **FEAT**(optimus): [RND-168006] Replace icons in the current library (#342).
+
 ## 0.24.2
 
  - **FIX**: [RND-169480] Fix clearAll button not reacting in the OptimusSearch (#336).

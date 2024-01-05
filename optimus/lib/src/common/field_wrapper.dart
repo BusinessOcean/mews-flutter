@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
 import 'package:optimus/src/common/field_error.dart';
 import 'package:optimus/src/common/field_label.dart';
-import 'package:optimus/src/constants.dart';
 import 'package:optimus/src/typography/presets.dart';
 
 class FieldWrapper extends StatefulWidget {
@@ -15,7 +14,8 @@ class FieldWrapper extends StatefulWidget {
     this.isFocused,
     this.label,
     this.caption,
-    this.secondaryCaption,
+    this.captionIcon,
+    this.helperMessage,
     this.error,
     this.errorVariant = OptimusInputErrorVariant.bottomHint,
     this.hasBorders = true,
@@ -24,6 +24,7 @@ class FieldWrapper extends StatefulWidget {
     this.prefix,
     this.fieldBoxKey,
     this.children = const <Widget>[],
+    this.size = OptimusWidgetSize.large,
   });
 
   final bool isEnabled;
@@ -31,7 +32,8 @@ class FieldWrapper extends StatefulWidget {
   final bool? isFocused;
   final String? label;
   final Widget? caption;
-  final Widget? secondaryCaption;
+  final IconData? captionIcon;
+  final Widget? helperMessage;
   final String? error;
   final OptimusInputErrorVariant errorVariant;
   final bool hasBorders;
@@ -40,6 +42,7 @@ class FieldWrapper extends StatefulWidget {
   final Widget? prefix;
   final List<Widget> children;
   final Key? fieldBoxKey;
+  final OptimusWidgetSize size;
 
   bool get hasError {
     final error = this.error;
@@ -52,15 +55,17 @@ class FieldWrapper extends StatefulWidget {
 }
 
 class _FieldWrapper extends State<FieldWrapper> with ThemeGetter {
+  bool _isHovered = false;
+
   @override
   void initState() {
     super.initState();
-    widget.focusNode.addListener(_onFocusChanged);
+    widget.focusNode.addListener(_handleFocusChanged);
   }
 
   @override
   void dispose() {
-    widget.focusNode.removeListener(_onFocusChanged);
+    widget.focusNode.removeListener(_handleFocusChanged);
     super.dispose();
   }
 
@@ -75,178 +80,226 @@ class _FieldWrapper extends State<FieldWrapper> with ThemeGetter {
     return error;
   }
 
+  void _handleFocusChanged() => setState(() {});
+
+  void _handleHoverChanged(bool isHovered) =>
+      setState(() => _isHovered = isHovered);
+
+  bool get _isFocused => widget.isFocused ?? widget.focusNode.hasFocus;
+
+  Color? get _background => widget.isEnabled ? null : tokens.backgroundDisabled;
+
+  Color get _borderColor {
+    if (!widget.isEnabled) return tokens.borderDisabled;
+    if (widget.hasError) return tokens.borderAlertDanger;
+    if (_isFocused) return tokens.borderInteractiveFocus;
+    if (_isHovered) return tokens.borderInteractiveSecondaryHover;
+
+    return theme.tokens.borderInteractiveSecondaryDefault;
+  }
+
   @override
   Widget build(BuildContext context) {
     final label = widget.label;
-    final secondaryCaption = widget.secondaryCaption;
+    final helperMessage = widget.helperMessage;
     final caption = widget.caption;
+    final prefix = widget.prefix;
+    final suffix = widget.suffix;
+
+    final captionColor =
+        widget.isEnabled ? tokens.textStaticSecondary : tokens.textDisabled;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Row(
-          children: [
-            if (label != null)
-              OptimusFieldLabel(label: label, isRequired: widget.isRequired),
-            const Spacer(),
-            if (secondaryCaption != null)
-              OptimusCaption(
-                variation: Variation.variationSecondary,
-                child: DefaultTextStyle.merge(
-                  style: TextStyle(color: _secondaryCaptionColor),
-                  child: secondaryCaption,
-                ),
-              ),
-          ],
-        ),
-        Opacity(
-          opacity:
-              widget.isEnabled ? OpacityValue.enabled : OpacityValue.disabled,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: widget.size.labelPadding,
+          child: Row(
             children: [
-              IgnorePointer(
-                ignoring: !widget.isEnabled,
-                child: _FieldPadding(
-                  // Decoration is nullable, cannot use DecoratedBox
-                  // ignore: use_decorated_box
-                  child: Container(
-                    key: widget.fieldBoxKey,
-                    decoration: widget.hasBorders
-                        ? BoxDecoration(
-                            color: _background,
-                            borderRadius:
-                                const BorderRadius.all(borderRadius100),
-                            border: Border.all(color: _borderColor, width: 1),
-                          )
-                        : null,
-                    child: Row(
-                      children: _buildChildren(),
-                    ),
-                  ),
+              if (label != null)
+                OptimusFieldLabel(
+                  label: label,
+                  isRequired: widget.isRequired,
+                  isEnabled: widget.isEnabled,
                 ),
-              ),
-              if (_isUsingBottomHint && _normalizedError.isNotEmpty)
-                OptimusFieldError(error: _normalizedError),
-              if (!widget.hasError && caption != null)
-                OptimusCaption(
-                  child: DefaultTextStyle.merge(
-                    style: TextStyle(color: _captionColor),
-                    child: caption,
-                  ),
+              const Spacer(),
+              if (caption != null)
+                _InputCaption(
+                  caption: caption,
+                  captionIcon: widget.captionIcon,
+                  isEnabled: widget.isEnabled,
                 ),
             ],
           ),
         ),
+        IgnorePointer(
+          ignoring: !widget.isEnabled,
+          child:
+              // Decoration is nullable, cannot use DecoratedBox
+              // ignore: use_decorated_box
+              Container(
+            key: widget.fieldBoxKey,
+            decoration: widget.hasBorders
+                ? BoxDecoration(
+                    color: _background,
+                    borderRadius:
+                        BorderRadius.circular(context.tokens.borderRadius100),
+                    border: Border.all(
+                      color: _borderColor,
+                      width: context.tokens.borderWidth150,
+                    ),
+                  )
+                : null,
+            child: MouseRegion(
+              onEnter: (_) => _handleHoverChanged(true),
+              onExit: (_) => _handleHoverChanged(false),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                height: widget.size.height,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: widget.size.contentPadding,
+                  ),
+                  child: Row(
+                    children: [
+                      if (prefix != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: spacing50),
+                          child: _Styled(
+                            isEnabled: widget.isEnabled,
+                            child: prefix,
+                          ),
+                        ),
+                      ...widget.children,
+                      if (suffix != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: spacing50),
+                          child: _Styled(
+                            isEnabled: widget.isEnabled,
+                            child: suffix,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (helperMessage != null)
+          Padding(
+            padding: widget.size.helperPadding,
+            child: OptimusCaption(
+              child: DefaultTextStyle.merge(
+                style: TextStyle(color: captionColor),
+                child: helperMessage,
+              ),
+            ),
+          ),
+        if (_isUsingBottomHint && _normalizedError.isNotEmpty)
+          Padding(
+            padding: widget.size.errorPadding,
+            child: OptimusFieldError(
+              error: _normalizedError,
+              isEnabled: widget.isEnabled,
+            ),
+          ),
       ],
     );
   }
-
-  void _onFocusChanged() {
-    setState(() {});
-  }
-
-  bool get _isFocused => widget.isFocused ?? widget.focusNode.hasFocus;
-
-  Color get _background =>
-      theme.isDark ? theme.colors.neutral500 : theme.colors.neutral0;
-
-  Color get _secondaryCaptionColor =>
-      theme.isDark ? theme.colors.neutral0t32 : theme.colors.neutral1000t32;
-
-  Color get _borderColor {
-    if (_isFocused) return theme.colors.primary;
-
-    return widget.hasError ? theme.colors.danger : _inactiveColor;
-  }
-
-  Color get _inactiveColor =>
-      theme.isDark ? theme.colors.neutral200 : theme.colors.neutral100;
-
-  Color get _captionColor => _isFocused
-      ? theme.colors.primary
-      : theme.isDark
-          ? theme.colors.neutral0t64
-          : theme.colors.neutral1000t64;
-
-  List<Widget> _buildChildren() {
-    final prefix = widget.prefix;
-    final suffix = widget.suffix;
-
-    return <Widget>[
-      if (prefix != null) _Styled(child: _PrefixPadding(child: prefix)),
-      ...widget.children,
-      if (suffix != null) _Styled(child: _SuffixPadding(child: suffix))
-    ];
-  }
 }
 
-class _Icon extends StatelessWidget {
-  const _Icon({required this.child});
+class _InputCaption extends StatelessWidget {
+  const _InputCaption({
+    required this.caption,
+    this.captionIcon,
+    this.isEnabled = true,
+  });
 
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => IconTheme(
-        data: IconThemeData(color: _iconColor(context), size: 24),
-        child: child,
-      );
-
-  Color _iconColor(BuildContext context) {
-    final theme = OptimusTheme.of(context);
-
-    return theme.isDark ? theme.colors.neutral0 : theme.colors.neutral1000t64;
-  }
-}
-
-class _FieldPadding extends StatelessWidget {
-  const _FieldPadding({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: spacing25),
-        child: child,
-      );
-}
-
-class _SuffixPadding extends StatelessWidget {
-  const _SuffixPadding({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: child,
-      );
-}
-
-class _PrefixPadding extends StatelessWidget {
-  const _PrefixPadding({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 10),
-        child: child,
-      );
-}
-
-class _Styled extends StatelessWidget {
-  const _Styled({required this.child});
-
-  final Widget child;
+  final Widget caption;
+  final IconData? captionIcon;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) {
-    final theme = OptimusTheme.of(context);
+    final tokens = OptimusTheme.of(context).tokens;
+    final iconColor =
+        isEnabled ? tokens.textStaticPrimary : tokens.textDisabled;
+    final captionColor =
+        isEnabled ? tokens.textStaticSecondary : tokens.textDisabled;
 
-    return DefaultTextStyle.merge(
-      style: preset100s.copyWith(color: theme.colors.neutral1000t32),
-      child: _Icon(child: child),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: spacing50),
+          child: OptimusCaption(
+            variation: Variation.variationSecondary,
+            child: DefaultTextStyle.merge(
+              style: TextStyle(color: captionColor),
+              child: caption,
+            ),
+          ),
+        ),
+        if (captionIcon != null)
+          Icon(captionIcon, color: iconColor, size: _captionIconSize),
+      ],
     );
   }
 }
+
+class _Styled extends StatelessWidget {
+  const _Styled({required this.child, this.isEnabled = true});
+
+  final Widget child;
+  final bool isEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = OptimusTheme.of(context).tokens;
+    final textColor =
+        isEnabled ? tokens.textStaticTertiary : tokens.textDisabled;
+    final iconColor =
+        !isEnabled ? tokens.textDisabled : tokens.textStaticPrimary;
+
+    return DefaultTextStyle.merge(
+      style: preset200r.copyWith(color: textColor),
+      child: IconTheme(
+        data: IconThemeData(color: iconColor, size: _iconSize),
+        child: child,
+      ),
+    );
+  }
+}
+
+extension on OptimusWidgetSize {
+  EdgeInsets get labelPadding => switch (this) {
+        OptimusWidgetSize.small ||
+        OptimusWidgetSize.medium =>
+          const EdgeInsets.only(bottom: spacing50),
+        OptimusWidgetSize.large => const EdgeInsets.only(bottom: spacing100),
+      };
+  EdgeInsets get helperPadding => switch (this) {
+        OptimusWidgetSize.small ||
+        OptimusWidgetSize.medium =>
+          const EdgeInsets.only(top: spacing50),
+        OptimusWidgetSize.large => const EdgeInsets.only(top: spacing100),
+      };
+  EdgeInsets get errorPadding => const EdgeInsets.only(top: spacing50);
+
+  double get contentPadding => switch (this) {
+        OptimusWidgetSize.small => spacing150,
+        OptimusWidgetSize.medium => spacing200,
+        OptimusWidgetSize.large => spacing250,
+      };
+
+  double get height => switch (this) {
+        OptimusWidgetSize.small => spacing400,
+        OptimusWidgetSize.medium => spacing500,
+        OptimusWidgetSize.large => spacing600,
+      };
+}
+
+const _captionIconSize = 16.0;
+const _iconSize = 16.0;

@@ -5,7 +5,7 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story searchFieldStory = Story(
-  name: 'Forms/Search field',
+  name: 'Forms/Search Field',
   builder: (context) => ConstrainedBox(
     constraints: const BoxConstraints(maxWidth: 400),
     child: SearchStory(context.knobs),
@@ -67,7 +67,7 @@ class _SearchStoryState extends State<SearchStory> {
       isEnabled: k.boolean(label: 'Enabled', initial: true),
       isRequired: k.boolean(label: 'Required'),
       caption: Text(k.text(label: 'Caption', initial: '')),
-      secondaryCaption: Text(k.text(label: 'Secondary caption', initial: '')),
+      helperMessage: Text(k.text(label: 'Secondary caption', initial: '')),
       size: k.options(
         label: 'Size',
         initial: OptimusWidgetSize.large,

@@ -5,7 +5,7 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story inlineDialogStory = Story(
-  name: 'General/Dialogs/Inline dialog',
+  name: 'Data Display/Dialogs/Inline Dialog',
   builder: (context) => DialogWrapper(child: InlineDialogStory(context.knobs)),
 );
 
@@ -59,8 +59,8 @@ class _InlineContentExample extends StatelessWidget {
   const _InlineContentExample();
 
   @override
-  Widget build(BuildContext context) => Column(
-        children: const [
+  Widget build(BuildContext context) => const Column(
+        children: [
           _NumberRow(
             title: 'Adults',
             description: 'From 13 to 100',
@@ -72,7 +72,7 @@ class _InlineContentExample extends StatelessWidget {
           _NumberRow(
             title: 'Toddlers',
             description: 'From 0 to 3',
-          )
+          ),
         ],
       );
 }
@@ -96,7 +96,7 @@ class _NumberRow extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            OptimusNumberPickerFormField(initialValue: 8)
+            OptimusNumberPickerFormField(initialValue: 8),
           ],
         ),
       );

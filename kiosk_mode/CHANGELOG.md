@@ -1,3 +1,24 @@
+## 0.5.0+2
+
+ - **FIX**: Add namespace field to build.gradle (#473).
+
+## 0.5.0+1
+
+ - **REFACTOR**: Fix DCM issues.
+
+## 0.5.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **REFACTOR**: Migrate to Dart 3 (#387).
+
+## 0.4.0
+
+> Note: This release has breaking changes.
+
+ - **REFACTOR**: Fix lint errors.
+ - **BREAKING** **BUILD**: Increase kotlin_version to 1.5.20 (#373).
+
 ## 0.3.0+1
 
  - **REFACTOR**: Bump mews_pedantic to 0.13.0 (#319).

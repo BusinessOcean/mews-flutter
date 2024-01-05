@@ -1,7 +1,6 @@
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/elevation.dart';
 import 'package:optimus/src/typography/presets.dart';
 import 'package:optimus/src/typography/typography.dart';
 
@@ -57,7 +56,7 @@ class _OptimusCompactStepBarState extends State<OptimusCompactStepBar>
     });
   }
 
-  void _expand() {
+  void _handleExpand() {
     if (_overlayEntry != null) return;
 
     _overlayEntry = _createOverlayEntry().also((it) {
@@ -66,7 +65,7 @@ class _OptimusCompactStepBarState extends State<OptimusCompactStepBar>
     });
   }
 
-  void _collapse() {
+  void _handleCollapse() {
     final overlay = _overlayEntry;
 
     if (overlay != null) {
@@ -84,7 +83,7 @@ class _OptimusCompactStepBarState extends State<OptimusCompactStepBar>
         builder: (context) => IgnorePointer(
           ignoring: _animationController.isAnimating,
           child: GestureDetector(
-            onTap: _collapse,
+            onTap: _handleCollapse,
             child: Material(
               color: Colors.transparent,
               child: _StepBarData(
@@ -111,7 +110,7 @@ class _OptimusCompactStepBarState extends State<OptimusCompactStepBar>
         currentItem: widget.currentItem,
         maxItem: widget.maxItem,
         child: GestureDetector(
-          onTap: _expand,
+          onTap: _handleExpand,
           child: CompositedTransformTarget(
             link: _layerLink,
             child: _CollapsedCompactStepBar(
@@ -131,7 +130,8 @@ class _CollapsedCompactStepBar extends StatelessWidget {
 
   final bool showShadow;
 
-  List<BoxShadow>? get _shadow => showShadow ? elevation25 : null;
+  List<BoxShadow>? _getShadow(OptimusTokens tokens) =>
+      showShadow ? tokens.shadow100 : null;
 
   @override
   Widget build(BuildContext context) {
@@ -143,8 +143,9 @@ class _CollapsedCompactStepBar extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: _itemHeight),
             decoration: BoxDecoration(
               color: OptimusTheme.of(context).colors.neutral0,
-              boxShadow: _shadow,
-              borderRadius: const BorderRadius.all(borderRadius50),
+              boxShadow: _getShadow(context.tokens),
+              borderRadius:
+                  BorderRadius.circular(context.tokens.borderRadius50),
             ),
             child: Row(
               children: [
@@ -156,7 +157,7 @@ class _CollapsedCompactStepBar extends StatelessWidget {
                 _CompactStepBarIndicator(
                   currentStep: data.currentItem,
                   maxSteps: data.maxItem,
-                )
+                ),
               ],
             ),
           )
@@ -220,7 +221,7 @@ class _CompactStepBarIndicator extends StatelessWidget {
                 child: Text(text),
               ),
               const SizedBox(width: spacing50),
-              const OptimusIcon(iconData: OptimusIcons.chevron_up)
+              const OptimusIcon(iconData: OptimusIcons.chevron_up),
             ],
           ),
         ),
@@ -326,7 +327,7 @@ class _ExpandedCompactStepBarState extends State<_ExpandedCompactStepBar>
                     controller: widget.controller,
                     itemsCount: data.items.length,
                     width: _targetWidth,
-                  )
+                  ),
               ],
             ),
           )
@@ -423,8 +424,9 @@ class _AnimatedStepBarState extends State<_AnimatedStepBar> {
               width: widget.width,
               decoration: BoxDecoration(
                 color: OptimusTheme.of(context).colors.neutral0,
-                boxShadow: elevation25,
-                borderRadius: const BorderRadius.all(borderRadius50),
+                boxShadow: context.tokens.shadow100,
+                borderRadius:
+                    BorderRadius.circular(context.tokens.borderRadius50),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -433,16 +435,12 @@ class _AnimatedStepBarState extends State<_AnimatedStepBar> {
                 ),
                 child: Stack(
                   children: [
-                    Row(
-                      children: [
-                        OptimusStepBar(
-                          type: data.type,
-                          layout: Axis.vertical,
-                          items: data.items,
-                          currentItem: data.currentItem,
-                          maxItem: data.maxItem,
-                        ),
-                      ],
+                    OptimusStepBar(
+                      type: data.type,
+                      layout: Axis.vertical,
+                      items: data.items,
+                      currentItem: data.currentItem,
+                      maxItem: data.maxItem,
                     ),
                     Positioned(
                       top: spacing100,
@@ -453,7 +451,7 @@ class _AnimatedStepBarState extends State<_AnimatedStepBar> {
                           iconData: OptimusIcons.chevron_up,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

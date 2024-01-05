@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
 import 'package:optimus/src/common/anchored_overlay.dart';
 import 'package:optimus/src/dropdown/dropdown_tap_interceptor.dart';
-import 'package:optimus/src/elevation.dart';
 
 typedef Grouper<T> = String Function(T item);
 typedef GroupBuilder = Widget Function(String value);
@@ -74,19 +73,10 @@ class _DropdownContent<T> extends StatelessWidget {
     final theme = OptimusTheme.of(context);
 
     return BoxDecoration(
-      borderRadius: const BorderRadius.all(borderRadius100),
+      borderRadius: BorderRadius.circular(context.tokens.borderRadius100),
       color: theme.isDark ? theme.colors.neutral500 : theme.colors.neutral0,
-      boxShadow: elevation50,
+      boxShadow: context.tokens.shadow200,
     );
-  }
-
-  Widget? _buildEmptyPlaceholder() {
-    if (emptyResultPlaceholder != null) {
-      return Material(
-        color: Colors.transparent,
-        child: emptyResultPlaceholder,
-      );
-    }
   }
 
   Widget _buildSearch(
@@ -101,38 +91,51 @@ class _DropdownContent<T> extends StatelessWidget {
         child: embeddedSearch,
       );
 
-  Widget _buildList(
-    bool isOnTop,
-    double maxHeight,
-  ) {
-    final groupBy = this.groupBy;
+  Widget _buildList(bool isOnTop, double maxHeight) {
+    if (groupBy case final groupBy?) {
+      return _GroupedDropdownListView(
+        items: items,
+        onChanged: onChanged,
+        isReversed: isOnTop,
+        groupBy: groupBy,
+        groupBuilder: groupBuilder,
+        maxHeight: maxHeight,
+      );
+    }
 
-    return groupBy != null
-        ? _GroupedDropdownListView(
-            items: items,
-            onChanged: onChanged,
-            isReversed: isOnTop,
-            groupBy: groupBy,
-            groupBuilder: groupBuilder,
-            maxHeight: maxHeight,
-          )
-        : _DropdownListView(
-            items: items,
-            onChanged: onChanged,
-            isReversed: isOnTop,
-            maxHeight: maxHeight,
-          );
+    return _DropdownListView(
+      items: items,
+      onChanged: onChanged,
+      isReversed: isOnTop,
+      maxHeight: maxHeight,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = AnchoredOverlay.of(context);
-    final embeddedSearch = this.embeddedSearch;
     if (controller != null) {
       final isOnTop = controller.top > controller.bottom;
       final listMaxHeight = embeddedSearch != null
           ? controller.maxHeight - _embeddedSearchHeight
           : controller.maxHeight;
+
+      final content = items.isNotEmpty
+          ? Container(
+              constraints: BoxConstraints(
+                maxHeight: listMaxHeight,
+                maxWidth: controller.width,
+              ),
+              child: OptimusScrollConfiguration(
+                child: _buildList(isOnTop, listMaxHeight),
+              ),
+            )
+          : emptyResultPlaceholder ?? const SizedBox.shrink();
+      final children = [
+        Material(color: Colors.transparent, child: content),
+        if (embeddedSearch case final embeddedSearch?)
+          _buildSearch(controller, isOnTop, embeddedSearch),
+      ];
 
       return Container(
         constraints: BoxConstraints(maxHeight: controller.maxHeight),
@@ -140,27 +143,7 @@ class _DropdownContent<T> extends StatelessWidget {
         decoration: _dropdownDecoration(context),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            if (embeddedSearch != null && !isOnTop)
-              _buildSearch(controller, isOnTop, embeddedSearch),
-            if (items.isNotEmpty)
-              Container(
-                constraints: BoxConstraints(
-                  maxHeight: listMaxHeight,
-                  maxWidth: controller.width,
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: OptimusScrollConfiguration(
-                    child: _buildList(isOnTop, listMaxHeight),
-                  ),
-                ),
-              ),
-            if (items.isEmpty)
-              _buildEmptyPlaceholder() ?? const SizedBox.shrink(),
-            if (embeddedSearch != null && isOnTop)
-              _buildSearch(controller, isOnTop, embeddedSearch),
-          ],
+          children: isOnTop ? children : children.reversed.toList(),
         ),
       );
     }
@@ -250,11 +233,10 @@ class _GroupedDropdownListViewState<T>
     int groupsCount = 1;
 
     final sorted = [...widget.items]..sort((e1, e2) {
-        int? result;
         final value1 = e1.value;
         final value2 = e2.value;
 
-        result = widget.groupBy(value1).compareTo(widget.groupBy(value2));
+        int? result = widget.groupBy(value1).compareTo(widget.groupBy(value2));
         if (result == 0) {
           if (value1 is Comparable) {
             result = value1.compareTo(value2 as Comparable);
@@ -270,25 +252,18 @@ class _GroupedDropdownListViewState<T>
     return sorted;
   }
 
-  Widget _buildItem(OptimusDropdownTile<T> child) =>
-      _DropdownItem(onChanged: widget.onChanged, child: child);
-
-  Widget _buildHeader(
-    bool useBorder,
-    OptimusDropdownTile<T> child,
-  ) =>
-      _GroupWrapper(
-        useBorder: useBorder,
-        group: _effectiveGroupBuilder(widget.groupBy(child.value)),
-        child: _buildItem(child),
-      );
-
   int get _leadingIndex => widget.isReversed ? _sortedItems.length - 1 : 0;
 
   double get _minListHeight =>
       _groupsCount * _groupMinHeight +
       widget.items.length * _itemMinHeight +
       _listVerticalSpacing * 2;
+
+  bool _isSameGroup(
+    OptimusDropdownTile<T> first,
+    OptimusDropdownTile<T> second,
+  ) =>
+      widget.groupBy(second.value) == widget.groupBy(first.value);
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -299,16 +274,26 @@ class _GroupedDropdownListViewState<T>
           itemCount: widget.items.length,
           itemBuilder: (context, index) {
             final current = _sortedItems[index];
+            final child =
+                _DropdownItem(onChanged: widget.onChanged, child: current);
+
             if (index == _leadingIndex) {
-              return _buildHeader(false, current);
+              return _GroupWrapper(
+                useBorder: false,
+                group: _effectiveGroupBuilder(widget.groupBy(current.value)),
+                child: child,
+              );
             }
 
             final previous = _sortedItems[index + (widget.isReversed ? 1 : -1)];
 
-            return widget.groupBy(current.value) !=
-                    widget.groupBy(previous.value)
-                ? _buildHeader(true, current)
-                : _buildItem(current);
+            return _isSameGroup(current, previous)
+                ? child
+                : _GroupWrapper(
+                    group:
+                        _effectiveGroupBuilder(widget.groupBy(current.value)),
+                    child: child,
+                  );
           },
         ),
       );
@@ -325,23 +310,26 @@ class _GroupWrapper extends StatelessWidget {
   final Widget group;
   final Widget child;
 
-  Widget _buildGroup(BuildContext context) => Container(
-        width: AnchoredOverlay.of(context)?.width,
-        decoration: BoxDecoration(
-          border: Border(
-            top: useBorder
-                ? BorderSide(color: OptimusTheme.of(context).colors.neutral25)
-                : BorderSide.none,
-          ),
-        ),
-        child: group,
-      );
-
   @override
   Widget build(BuildContext context) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_buildGroup(context), child],
+        children: [
+          Container(
+            width: AnchoredOverlay.of(context)?.width,
+            decoration: useBorder
+                ? BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: OptimusTheme.of(context).colors.neutral25,
+                      ),
+                    ),
+                  )
+                : null,
+            child: group,
+          ),
+          child,
+        ],
       );
 }
 
@@ -362,19 +350,22 @@ class _DropdownItem<T> extends StatefulWidget {
 class _DropdownItemState<T> extends State<_DropdownItem<T>> with ThemeGetter {
   bool _isHighlighted = false;
 
-  void _onItemTap() {
+  void _handleItemTap() {
     widget.onChanged(widget.child.value);
     DropdownTapInterceptor.of(context)?.onTap();
   }
 
+  void _handleHighlightChanged(bool isHighlighted) =>
+      setState(() => _isHighlighted = isHighlighted);
+
   @override
   Widget build(BuildContext context) => SizedBox(
         width: AnchoredOverlay.of(context)?.width,
+        height: _itemMinHeight,
         child: InkWell(
           highlightColor: theme.colors.primary,
-          onHighlightChanged: (isHighlighted) =>
-              setState(() => _isHighlighted = isHighlighted),
-          onTap: _onItemTap,
+          onHighlightChanged: _handleHighlightChanged,
+          onTap: _handleItemTap,
           child: _isHighlighted
               ? OptimusTheme(
                   themeMode: ThemeMode.dark,
@@ -405,29 +396,25 @@ class _SearchWrapper extends StatefulWidget {
   State<_SearchWrapper> createState() => _SearchWrapperState();
 }
 
-class _SearchWrapperState extends State<_SearchWrapper> {
+class _SearchWrapperState extends State<_SearchWrapper> with ThemeGetter {
   final GlobalKey _searchKey = GlobalKey();
-
-  Widget _buildDivider(OptimusThemeData theme) =>
-      Divider(thickness: 1, height: 1, color: theme.colors.neutral50);
 
   @override
   Widget build(BuildContext context) {
-    final theme = OptimusTheme.of(context);
+    final children = [
+      if (widget.showDivider)
+        Divider(thickness: 1, height: 1, color: theme.colors.neutral50),
+      KeyedSubtree(key: _searchKey, child: widget.child),
+    ];
 
-    return SizedBox(
-      child: Column(
-        children: [
-          if (widget.showDivider && widget.isOnTop) _buildDivider(theme),
-          KeyedSubtree(key: _searchKey, child: widget.child),
-          if (widget.showDivider && !widget.isOnTop) _buildDivider(theme),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: widget.isOnTop ? children : children.reversed.toList(),
     );
   }
 }
 
-const _embeddedSearchHeight = 54.0;
+const _embeddedSearchHeight = 61.0;
 const _groupMinHeight = 28.0;
 const _itemMinHeight = 69.0;
 const _listVerticalSpacing = spacing100;

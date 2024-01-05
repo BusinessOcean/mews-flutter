@@ -1,3 +1,51 @@
+## 0.22.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Upgrade to DCM 1.12.0.
+
+## 0.21.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Add new rules from Dart 3.2.
+ - **BREAKING** **FEAT**: Upgrade to DCM 1.11.0.
+
+## 0.20.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Update rules configuration (#453).
+ - **BREAKING** **FEAT**: Update to DCM 1.10.0.
+
+## 0.19.1
+
+ - **FEAT**: Update rules set (#450).
+
+## 0.19.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Update rules set (#432).
+
+## 0.18.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Update rules set (#426).
+
+## 0.17.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Updated rules set.
+
+## 0.16.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **REFACTOR**: Migrate to Dart 3 (#387).
+
 ## 0.15.0
 
 > Note: This release has breaking changes.

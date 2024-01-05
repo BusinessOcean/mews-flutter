@@ -5,7 +5,7 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story segmentedControlStory = Story(
-  name: 'Forms/Segmented control',
+  name: 'Forms/Segmented Control',
   builder: (context) {
     final k = context.knobs;
     final label = k.text(label: 'Label', initial: '');
@@ -30,64 +30,70 @@ final Story segmentedControlStory = Story(
     );
     final isEnabled = k.boolean(label: 'Enabled', initial: true);
     final isRequired = k.boolean(label: 'Required', initial: false);
+    final width = k.slider(label: 'Width', min: 200, initial: 600, max: 800);
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: spacing100),
-            child: _SegmentedControlExample(
-              label: label,
-              error: error,
-              direction: direction,
-              size: size,
-              maxLines: maxLines,
-              isEnabled: isEnabled,
-              isRequired: isRequired,
-              options: _options2,
-            ),
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: width),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: spacing100),
+                child: _SegmentedControlExample(
+                  label: label,
+                  error: error,
+                  direction: direction,
+                  size: size,
+                  maxLines: maxLines,
+                  isEnabled: isEnabled,
+                  isRequired: isRequired,
+                  options: _options2,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: spacing100),
+                child: _SegmentedControlExample(
+                  label: label,
+                  error: error,
+                  direction: direction,
+                  size: size,
+                  maxLines: maxLines,
+                  isEnabled: isEnabled,
+                  isRequired: isRequired,
+                  options: _options3,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: spacing100),
+                child: _SegmentedControlExample(
+                  label: label,
+                  error: error,
+                  direction: direction,
+                  size: size,
+                  maxLines: maxLines,
+                  isEnabled: isEnabled,
+                  isRequired: isRequired,
+                  options: _options4,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: spacing100),
+                child: _SegmentedControlExample(
+                  label: label,
+                  error: error,
+                  direction: direction,
+                  size: size,
+                  maxLines: maxLines,
+                  isEnabled: isEnabled,
+                  isRequired: isRequired,
+                  options: _options5,
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: spacing100),
-            child: _SegmentedControlExample(
-              label: label,
-              error: error,
-              direction: direction,
-              size: size,
-              maxLines: maxLines,
-              isEnabled: isEnabled,
-              isRequired: isRequired,
-              options: _options3,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: spacing100),
-            child: _SegmentedControlExample(
-              label: label,
-              error: error,
-              direction: direction,
-              size: size,
-              maxLines: maxLines,
-              isEnabled: isEnabled,
-              isRequired: isRequired,
-              options: _options4,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: spacing100),
-            child: _SegmentedControlExample(
-              label: label,
-              error: error,
-              direction: direction,
-              size: size,
-              maxLines: maxLines,
-              isEnabled: isEnabled,
-              isRequired: isRequired,
-              options: _options5,
-            ),
-          )
-        ],
+        ),
       ),
     );
   },
@@ -122,6 +128,8 @@ class _SegmentedControlExample extends StatefulWidget {
 class _SegmentedControlExampleState extends State<_SegmentedControlExample> {
   String _value = 'Another long option';
 
+  void _handleItemSelected(String value) => setState(() => _value = value);
+
   @override
   Widget build(BuildContext context) => OptimusSegmentedControl<String>(
         value: _value,
@@ -132,7 +140,7 @@ class _SegmentedControlExampleState extends State<_SegmentedControlExample> {
         error: widget.error,
         isEnabled: widget.isEnabled,
         direction: widget.direction,
-        onItemSelected: (value) => setState(() => _value = value),
+        onItemSelected: _handleItemSelected,
         items: widget.options
             .map((i) => OptimusGroupItem<String>(label: Text(i), value: i))
             .toList(),
@@ -152,6 +160,7 @@ const _options3 = [
 
 const _options4 = [
   'Another long option',
+  'Option that is meant to overflow because of the long text',
   'B',
   'C',
   'D',

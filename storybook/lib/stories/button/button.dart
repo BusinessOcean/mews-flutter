@@ -4,23 +4,19 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story button = Story(
-  name: 'General/Buttons/Button',
+  name: 'Buttons/Button',
   builder: (context) {
     final k = context.knobs;
 
-    final icon = k.options(
-      label: 'Icon',
+    final leadingIcon = k.options(
+      label: 'Leading icon',
       initial: null,
       options: exampleIcons,
     );
-
-    final iconPosition = k.options(
-      label: 'Icon position',
-      initial: OptimusButtonIconPosition.left,
-      options: const [
-        Option(label: 'Left', value: OptimusButtonIconPosition.left),
-        Option(label: 'Right', value: OptimusButtonIconPosition.right),
-      ],
+    final trailingIcon = k.options(
+      label: 'Trailing icon',
+      initial: null,
+      options: exampleIcons,
     );
 
     return SingleChildScrollView(
@@ -38,8 +34,8 @@ final Story button = Story(
                     options: sizeOptions,
                   ),
                   variant: v,
-                  icon: icon,
-                  iconPosition: iconPosition,
+                  leadingIcon: leadingIcon,
+                  trailingIcon: trailingIcon,
                   badgeLabel: k.text(label: 'Badge', initial: ''),
                   child: Text(k.text(label: 'Text', initial: 'Button')),
                 ),

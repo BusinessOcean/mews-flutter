@@ -1,8 +1,7 @@
-import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
+import 'package:optimus/src/common/gesture_wrapper.dart';
 import 'package:optimus/src/common/group_wrapper.dart';
-import 'package:optimus/src/segmented_control/wrapper.dart';
 import 'package:optimus/src/typography/presets.dart';
 
 /// Segmented Control is a set of two or more segments, that provide closely
@@ -24,8 +23,7 @@ class OptimusSegmentedControl<T> extends StatelessWidget {
           items.map((i) => i.value).contains(value),
           'Segmented control should always have some existing value',
         ),
-        items = List.unmodifiable(items),
-        _selectedItemIndex = items.map((i) => i.value).toList().indexOf(value);
+        items = List.unmodifiable(items);
 
   /// Size of the segmented control.
   final OptimusWidgetSize size;
@@ -58,8 +56,6 @@ class OptimusSegmentedControl<T> extends StatelessWidget {
   /// the [Axis.horizontal] this will be set to 1.
   final int? maxLines;
 
-  final int _selectedItemIndex;
-
   int? get _maxLines => direction == Axis.horizontal ? 1 : maxLines;
 
   OptimusStackDistribution get _distribution => direction == Axis.horizontal
@@ -70,49 +66,41 @@ class OptimusSegmentedControl<T> extends StatelessWidget {
       ? OptimusStackSpacing.spacing0
       : OptimusStackSpacing.spacing50;
 
-  Widget _buildGroupWrapper(Widget child) => direction == Axis.horizontal
-      ? BorderWrapper(
-          size: size,
-          selectedItemIndex: _selectedItemIndex,
-          listSize: items.length,
-          isEnabled: isEnabled,
-          child: child,
-        )
-      : child;
-
-  Widget _buildChildWrapper(int index, OptimusGroupItem<T> value) =>
-      direction == Axis.vertical
-          ? _SegmentDecoration(
-              isEnabled: isEnabled,
-              isSelected: index == _selectedItemIndex,
-              child: _buildControlItem(value),
-            )
-          : _buildControlItem(value);
-
-  Widget _buildControlItem(OptimusGroupItem<T> item) =>
-      _OptimusSegmentedControlItem<T>(
-        value: item.value,
-        size: size,
-        groupValue: value,
-        onItemSelected: onItemSelected,
-        isEnabled: isEnabled,
-        maxLines: _maxLines,
-        child: item.label,
-      );
-
   @override
   Widget build(BuildContext context) => GroupWrapper(
         label: label,
         error: error,
         isRequired: isRequired,
+        isEnabled: isEnabled,
         child: OptimusEnabled(
           isEnabled: isEnabled,
-          child: _buildGroupWrapper(
-            OptimusStack(
+          child: DecoratedBox(
+            decoration: direction == Axis.horizontal
+                ? BoxDecoration(
+                    color: OptimusTheme.of(context)
+                        .tokens
+                        .backgroundInteractiveNeutralDefault,
+                    borderRadius:
+                        BorderRadius.circular(context.tokens.borderRadius100),
+                  )
+                : const BoxDecoration(),
+            child: OptimusStack(
               direction: direction,
               distribution: _distribution,
               spacing: _spacing,
-              children: items.mapIndexed(_buildChildWrapper).toList(),
+              children: items
+                  .map(
+                    (item) => _OptimusSegmentedControlItem<T>(
+                      value: item.value,
+                      size: size,
+                      groupValue: value,
+                      onItemSelected: onItemSelected,
+                      isEnabled: isEnabled,
+                      maxLines: _maxLines,
+                      child: item.label,
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ),
@@ -132,17 +120,11 @@ class _OptimusSegmentedControlItem<T> extends StatefulWidget {
   });
 
   final Widget child;
-
   final OptimusWidgetSize size;
-
   final T value;
-
   final T groupValue;
-
   final ValueChanged<T> onItemSelected;
-
   final bool isEnabled;
-
   final int? maxLines;
 
   @override
@@ -153,109 +135,81 @@ class _OptimusSegmentedControlItem<T> extends StatefulWidget {
 class _OptimusSegmentedControlItemState<T>
     extends State<_OptimusSegmentedControlItem<T>> with ThemeGetter {
   bool _isHovering = false;
-  bool _isTappedDown = false;
+  bool _isPressed = false;
 
   bool get _isSelected => widget.value == widget.groupValue;
 
-  void _onHoverChanged(bool isHovering) {
-    setState(() => _isHovering = isHovering);
-  }
+  void _handleHoverChanged(bool isHovering) =>
+      setState(() => _isHovering = isHovering);
 
-  void _onChanged() {
+  void _handlePressedChanged(bool isPressed) =>
+      setState(() => _isPressed = isPressed);
+
+  void _handleChanged() {
     if (!_isSelected) {
       widget.onItemSelected(widget.value);
     }
   }
 
-  Color get _iconColor =>
-      widget.isEnabled ? theme.colors.primary500 : theme.colors.neutral100;
+  Color _color(OptimusTokens tokens) {
+    if (!widget.isEnabled) return tokens.backgroundInteractiveNeutralDefault;
+    if (_isPressed) return tokens.backgroundInteractiveNeutralActive;
+    if (_isHovering) return tokens.backgroundInteractiveNeutralHover;
 
-  Color get _color => _isHovering || _isTappedDown
-      ? theme.colors.primary500t8
-      : Colors.transparent;
+    return _isSelected
+        ? tokens.backgroundStaticFlat
+        : tokens.backgroundInteractiveNeutralDefault;
+  }
 
-  @override
-  Widget build(BuildContext context) => MouseRegion(
-        onEnter: (_) => _onHoverChanged(true),
-        onExit: (_) => _onHoverChanged(false),
-        child: GestureDetector(
-          onTap: _onChanged,
-          onTapDown: (_) => setState(() => _isTappedDown = true),
-          onTapUp: (_) => setState(() => _isTappedDown = false),
-          onTapCancel: () => setState(() => _isTappedDown = false),
-          child: Container(
-            color: _color,
-            constraints: BoxConstraints(minHeight: widget.size.value),
-            padding: const EdgeInsets.symmetric(vertical: spacing50),
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                if (_isSelected)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: spacing100),
-                      child: IconTheme(
-                        data: IconThemeData(
-                          color: _iconColor,
-                          size: 24,
-                        ),
-                        child: const Icon(OptimusIcons.done),
-                      ),
-                    ),
-                  ),
-                Center(
-                  child: DefaultTextStyle.merge(
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    maxLines: widget.maxLines,
-                    style: preset300b.copyWith(
-                      color: theme.isDark
-                          ? theme.colors.neutral0
-                          : theme.colors.neutral900,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: spacing500,
-                      ),
-                      child: widget.child,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-}
+  Color _foregroundColor(OptimusTokens tokens) {
+    if (!widget.isEnabled) return tokens.textDisabled;
 
-class _SegmentDecoration extends StatelessWidget {
-  const _SegmentDecoration({
-    required this.child,
-    required this.isEnabled,
-    required this.isSelected,
-  });
-
-  final Widget child;
-  final bool isEnabled;
-  final bool isSelected;
-
-  Color _color(OptimusThemeData theme) => (isEnabled && isSelected)
-      ? theme.colors.primary500
-      : theme.colors.neutral100;
+    return (_isSelected || _isHovering || _isPressed)
+        ? tokens.textStaticPrimary
+        : tokens.textStaticTertiary;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = OptimusTheme.of(context);
+    final tokens = OptimusTheme.of(context).tokens;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: const BorderRadius.all(borderRadius50),
-        border: Border.all(color: _color(theme)),
+    return LayoutBuilder(
+      builder: (context, constrains) => GestureWrapper(
+        onTap: _handleChanged,
+        onHoverChanged: _handleHoverChanged,
+        onPressedChanged: _handlePressedChanged,
+        child: Padding(
+          padding: const EdgeInsets.all(spacing25),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeOut,
+            constraints: BoxConstraints(minHeight: widget.size.value),
+            padding: const EdgeInsets.symmetric(vertical: spacing50),
+            decoration: BoxDecoration(
+              color: _color(tokens),
+              borderRadius:
+                  BorderRadius.circular(context.tokens.borderRadius100),
+            ),
+            alignment: Alignment.center,
+            child: DefaultTextStyle.merge(
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              maxLines: widget.maxLines,
+              style: preset200s.copyWith(color: _foregroundColor(tokens)),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: constrains.adaptivePadding,
+                ),
+                child: widget.child,
+              ),
+            ),
+          ),
+        ),
       ),
-      child: child,
     );
   }
+}
+
+extension on BoxConstraints {
+  double get adaptivePadding => maxWidth < 300 ? spacing100 : spacing200;
 }

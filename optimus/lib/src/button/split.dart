@@ -48,48 +48,50 @@ class OptimusSplitButton<T> extends StatelessWidget {
   final OptimusSplitButtonVariant variant;
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          BaseButton(
-            onPressed: onPressed,
-            variant: _buttonVariant,
-            borderRadius: const BorderRadius.only(
-              topLeft: borderRadius50,
-              bottomLeft: borderRadius50,
-            ),
-            size: size,
-            child: child,
-          ),
-          const SizedBox(width: 1),
-          BaseDropDownButton(
-            items: items,
-            onItemSelected: onItemSelected,
-            variant: _dropdownButtonVariant,
-            borderRadius: const BorderRadius.only(
-              topRight: borderRadius50,
-              bottomRight: borderRadius50,
-            ),
-            size: size,
-          ),
-        ],
-      );
+  Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    final borderRadius = Radius.circular(tokens.borderRadius50);
 
-  OptimusButtonVariant get _buttonVariant {
-    switch (variant) {
-      case OptimusSplitButtonVariant.defaultButton:
-        return OptimusButtonVariant.defaultButton;
-      case OptimusSplitButtonVariant.primary:
-        return OptimusButtonVariant.primary;
-    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        BaseButton(
+          onPressed: onPressed,
+          variant: variant.toButtonVariant(),
+          borderRadius: BorderRadius.only(
+            topLeft: borderRadius,
+            bottomLeft: borderRadius,
+          ),
+          size: size,
+          child: child,
+        ),
+        const SizedBox(width: 1),
+        BaseDropDownButton(
+          items: items,
+          onItemSelected: onItemSelected,
+          variant: variant.toDropdownButtonVariant(),
+          borderRadius: BorderRadius.only(
+            topRight: borderRadius,
+            bottomRight: borderRadius,
+          ),
+          size: size,
+        ),
+      ],
+    );
   }
+}
 
-  OptimusDropdownButtonVariant get _dropdownButtonVariant {
-    switch (variant) {
-      case OptimusSplitButtonVariant.defaultButton:
-        return OptimusDropdownButtonVariant.defaultButton;
-      case OptimusSplitButtonVariant.primary:
-        return OptimusDropdownButtonVariant.primary;
-    }
-  }
+extension on OptimusSplitButtonVariant {
+  OptimusButtonVariant toButtonVariant() => switch (this) {
+        OptimusSplitButtonVariant.defaultButton =>
+          OptimusButtonVariant.tertiary,
+        OptimusSplitButtonVariant.primary => OptimusButtonVariant.primary,
+      };
+
+  OptimusDropdownButtonVariant toDropdownButtonVariant() => switch (this) {
+        OptimusSplitButtonVariant.defaultButton =>
+          OptimusDropdownButtonVariant.defaultButton,
+        OptimusSplitButtonVariant.primary =>
+          OptimusDropdownButtonVariant.primary,
+      };
 }

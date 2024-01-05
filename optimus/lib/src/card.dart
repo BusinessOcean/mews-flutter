@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/elevation.dart';
 
 enum OptimusBasicCardVariant {
   /// The system default, general purpose option used in the majority of cases.
@@ -70,25 +69,22 @@ class OptimusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = OptimusTheme.of(context);
+    final tokens = theme.tokens;
 
     return _Card(
       spacing: padding,
       attachment: attachment,
-      shadows: _shadows,
+      shadows: _getShadows(tokens),
       contentWrapperBuilder: contentWrapperBuilder,
       color: _color(theme),
       child: child,
     );
   }
 
-  List<BoxShadow> get _shadows {
-    switch (variant) {
-      case OptimusBasicCardVariant.normal:
-        return elevation25;
-      case OptimusBasicCardVariant.overlay:
-        return elevation100;
-    }
-  }
+  List<BoxShadow> _getShadows(OptimusTokens tokens) => switch (variant) {
+        OptimusBasicCardVariant.normal => tokens.shadow100,
+        OptimusBasicCardVariant.overlay => tokens.shadow300,
+      };
 
   // TODO(VG): can be changed when final dark theme design is ready.
   Color _color(OptimusThemeData theme) =>
@@ -126,44 +122,35 @@ class OptimusNestedCard extends StatelessWidget {
   /// Controls card variant.
   final OptimusNestedCardVariant variant;
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = OptimusTheme.of(context);
-
-    return _Card(
-      spacing: padding,
-      attachment: attachment,
-      border: _border(theme),
-      color: _color(theme),
-      contentWrapperBuilder: contentWrapperBuilder,
-      child: child,
-    );
-  }
-
-  Border? _border(OptimusThemeData theme) =>
+  Border? _border(BuildContext context) =>
       variant == OptimusNestedCardVariant.normal
           ? Border.all(
-              width: 1,
+              width: context.tokens.borderWidth100,
               // TODO(VG): can be changed when final dark theme design is ready.
-              color: theme.isDark
-                  ? theme.colors.neutral0t32
-                  : theme.colors.neutral500t16,
+              color: context.theme.isDark
+                  ? context.theme.colors.neutral0t32
+                  : context.theme.colors.neutral500t16,
             )
           : null;
 
   // TODO(VG): can be changed when final dark theme design is ready.
-  Color _color(OptimusThemeData theme) {
-    switch (variant) {
-      case OptimusNestedCardVariant.emphasized:
-        return theme.isDark
-            ? theme.colors.neutral400t24
-            : theme.colors.neutral500t8;
-      case OptimusNestedCardVariant.highlighted:
-        return theme.colors.primary500t8;
-      case OptimusNestedCardVariant.normal:
-        return theme.isDark ? theme.colors.neutral500 : theme.colors.neutral0;
-    }
-  }
+  Color _color(OptimusThemeData theme) => switch (variant) {
+        OptimusNestedCardVariant.emphasized =>
+          theme.isDark ? theme.colors.neutral400t24 : theme.colors.neutral500t8,
+        OptimusNestedCardVariant.highlighted => theme.colors.primary500t8,
+        OptimusNestedCardVariant.normal =>
+          theme.isDark ? theme.colors.neutral500 : theme.colors.neutral0,
+      };
+
+  @override
+  Widget build(BuildContext context) => _Card(
+        spacing: padding,
+        attachment: attachment,
+        border: _border(context),
+        color: _color(context.theme),
+        contentWrapperBuilder: contentWrapperBuilder,
+        child: child,
+      );
 }
 
 class _Card extends StatelessWidget {
@@ -185,6 +172,30 @@ class _Card extends StatelessWidget {
   final Border? border;
   final Color? color;
 
+  BorderRadius _getBorderRadius(OptimusTokens tokens) {
+    final radius = Radius.circular(tokens.borderRadius200);
+
+    return switch (attachment) {
+      OptimusCardAttachment.none => BorderRadius.all(radius),
+      OptimusCardAttachment.left => BorderRadius.only(
+          topRight: radius,
+          bottomRight: radius,
+        ),
+      OptimusCardAttachment.right => BorderRadius.only(
+          topLeft: radius,
+          bottomLeft: radius,
+        ),
+      OptimusCardAttachment.top => BorderRadius.only(
+          bottomLeft: radius,
+          bottomRight: radius,
+        ),
+      OptimusCardAttachment.bottom => BorderRadius.only(
+          topLeft: radius,
+          topRight: radius,
+        ),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final contentWrapperBuilder = this.contentWrapperBuilder;
@@ -195,40 +206,13 @@ class _Card extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        borderRadius: _borderRadius,
+        borderRadius: _getBorderRadius(context.tokens),
         border: border,
         color: color,
         boxShadow: shadows,
       ),
       child: wrappedChild,
     );
-  }
-
-  BorderRadius get _borderRadius {
-    switch (attachment) {
-      case OptimusCardAttachment.none:
-        return const BorderRadius.all(borderRadius200);
-      case OptimusCardAttachment.left:
-        return const BorderRadius.only(
-          topRight: borderRadius200,
-          bottomRight: borderRadius200,
-        );
-      case OptimusCardAttachment.right:
-        return const BorderRadius.only(
-          topLeft: borderRadius200,
-          bottomLeft: borderRadius200,
-        );
-      case OptimusCardAttachment.top:
-        return const BorderRadius.only(
-          bottomLeft: borderRadius200,
-          bottomRight: borderRadius200,
-        );
-      case OptimusCardAttachment.bottom:
-        return const BorderRadius.only(
-          topLeft: borderRadius200,
-          topRight: borderRadius200,
-        );
-    }
   }
 }
 
@@ -246,18 +230,11 @@ class OptimusCardChildPadding extends StatelessWidget {
   Widget build(BuildContext context) =>
       Padding(padding: _padding, child: child);
 
-  EdgeInsets get _padding {
-    switch (spacing) {
-      case OptimusCardSpacing.spacing0:
-        return EdgeInsets.zero;
-      case OptimusCardSpacing.spacing100:
-        return const EdgeInsets.all(spacing100);
-      case OptimusCardSpacing.spacing200:
-        return const EdgeInsets.all(spacing200);
-      case OptimusCardSpacing.spacing300:
-        return const EdgeInsets.all(spacing300);
-      case OptimusCardSpacing.spacing400:
-        return const EdgeInsets.all(spacing400);
-    }
-  }
+  EdgeInsets get _padding => switch (spacing) {
+        OptimusCardSpacing.spacing0 => EdgeInsets.zero,
+        OptimusCardSpacing.spacing100 => const EdgeInsets.all(spacing100),
+        OptimusCardSpacing.spacing200 => const EdgeInsets.all(spacing200),
+        OptimusCardSpacing.spacing300 => const EdgeInsets.all(spacing300),
+        OptimusCardSpacing.spacing400 => const EdgeInsets.all(spacing400),
+      };
 }

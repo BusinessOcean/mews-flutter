@@ -7,23 +7,27 @@ class OptimusFieldLabel extends StatelessWidget {
     super.key,
     required this.label,
     this.isRequired = false,
+    this.isEnabled = true,
   });
 
   final String label;
   final bool isRequired;
+  final bool isEnabled;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 2),
-        child: OptimusLabel(
-          variation: Variation.variationSecondary,
-          child: Text(
-            isRequired ? '$label *' : label,
-            style: TextStyle(color: _textColor(OptimusTheme.of(context))),
-          ),
-        ),
-      );
+  Widget build(BuildContext context) {
+    final tokens = OptimusTheme.of(context).tokens;
+    final color = isEnabled ? tokens.textStaticPrimary : tokens.textDisabled;
 
-  Color _textColor(OptimusThemeData theme) =>
-      theme.isDark ? theme.colors.neutral0t64 : theme.colors.neutral1000t64;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: OptimusLabel(
+        variation: Variation.variationSecondary,
+        child: Text(
+          isRequired ? '$label *' : label,
+          style: TextStyle(color: color),
+        ),
+      ),
+    );
+  }
 }

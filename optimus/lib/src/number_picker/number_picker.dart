@@ -33,23 +33,19 @@ class OptimusNumberPickerFormField extends FormField<int> {
           validator: (value) => value != null && (value >= min && value <= max)
               ? null
               : validationError,
-          builder: (FormFieldState<int> field) {
-            void handleChanged(int? value) {
+          builder: (FormFieldState<int> field) => _OptimusNumberPicker(
+            initialValue: initialValue,
+            min: min,
+            max: max,
+            onChanged: (value) {
               field.didChange(value);
               onChanged?.call(value);
-            }
-
-            return _OptimusNumberPicker(
-              initialValue: initialValue,
-              min: min,
-              max: max,
-              onChanged: handleChanged,
-              enabled: enabled,
-              error: field.errorText,
-              focusNode: focusNode,
-              controller: controller,
-            );
-          },
+            },
+            enabled: enabled,
+            error: field.errorText,
+            focusNode: focusNode,
+            controller: controller,
+          ),
         );
 }
 
@@ -111,7 +107,7 @@ class _OptimusNumberPickerState extends State<_OptimusNumberPicker> {
     super.dispose();
   }
 
-  void _onMinusTap() {
+  void _handleMinusTap() {
     final value = _value;
     final int newValue;
     if (value != null) {
@@ -126,7 +122,7 @@ class _OptimusNumberPickerState extends State<_OptimusNumberPicker> {
     _updateController(newValue);
   }
 
-  void _onPlusTap() {
+  void _handlePlusTap() {
     final value = _value;
     final int newValue;
     if (value != null) {
@@ -174,11 +170,13 @@ class _OptimusNumberPickerState extends State<_OptimusNumberPicker> {
         controller: _effectiveController,
         leading: NumberPickerButton(
           iconData: OptimusIcons.minus_simple,
-          onPressed: value == null || value > widget.min ? _onMinusTap : null,
+          onPressed:
+              value == null || value > widget.min ? _handleMinusTap : null,
         ),
         trailing: NumberPickerButton(
           iconData: OptimusIcons.plus_simple,
-          onPressed: value == null || value < widget.max ? _onPlusTap : null,
+          onPressed:
+              value == null || value < widget.max ? _handlePlusTap : null,
         ),
         focusNode: _effectiveFocusNode,
         inputFormatters: [

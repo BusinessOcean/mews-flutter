@@ -7,12 +7,12 @@ export 'package:intl/intl.dart' show DateFormat;
 
 export 'optimus_icons.dart';
 export 'src/avatar.dart';
-export 'src/badge.dart';
+export 'src/badge/badge.dart';
 export 'src/banner.dart';
-export 'src/border_radius.dart';
 export 'src/borders.dart';
 export 'src/breakpoint.dart';
 export 'src/button/button.dart';
+export 'src/button/button_variant.dart';
 export 'src/button/dropdown.dart';
 export 'src/button/icon.dart';
 export 'src/button/split.dart';
@@ -23,6 +23,7 @@ export 'src/chat/message.dart';
 export 'src/checkbox/checkbox.dart';
 export 'src/checkbox/checkbox_group.dart';
 export 'src/checkbox/nested_checkbox.dart';
+export 'src/chip.dart';
 export 'src/colors/brand_colors.dart';
 export 'src/colors/color_options.dart';
 export 'src/colors/colors.dart';
@@ -46,6 +47,7 @@ export 'src/form/checkbox_form_field.dart';
 export 'src/form/date_input_field.dart';
 export 'src/form/date_input_form_field.dart';
 export 'src/form/date_time_form_field.dart';
+export 'src/form/error_variant.dart';
 export 'src/form/input_field.dart';
 export 'src/form/input_form_field.dart';
 export 'src/form/select_form_field.dart';
@@ -53,6 +55,7 @@ export 'src/form/select_input_form_field.dart';
 export 'src/icon.dart';
 export 'src/icon_list.dart';
 export 'src/link/inline_link.dart';
+export 'src/link/link_variant.dart';
 export 'src/link/standalone_link.dart';
 export 'src/lists/font_variant.dart';
 export 'src/lists/list_tile.dart';
@@ -62,7 +65,6 @@ export 'src/logo.dart';
 export 'src/notification/notification.dart';
 export 'src/notification/notification_overlay.dart';
 export 'src/number_picker/number_picker.dart';
-export 'src/progress_spinner.dart';
 export 'src/radio/radio.dart';
 export 'src/radio/radio_group.dart';
 export 'src/search/search_field.dart';
@@ -78,8 +80,10 @@ export 'src/step_bar/step_bar_compact.dart';
 export 'src/step_bar/step_bar_item.dart';
 export 'src/tabs.dart';
 export 'src/tag.dart';
+export 'src/theme/optimus_tokens.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/theme_data.dart';
+export 'src/toggle.dart';
 export 'src/tooltip/tooltip.dart';
 export 'src/tooltip/tooltip_wrapper.dart';
 export 'src/typography/caption.dart';
@@ -111,12 +115,12 @@ ThemeData createOptimusMaterialTheme(Brightness brightness) => ThemeData(
         labelLarge: baseTextStyle,
         labelSmall: baseTextStyle,
       ),
-      cupertinoOverrideTheme: CupertinoThemeData.raw(
-        brightness,
-        Colors.blue,
-        Colors.blue,
-        const CupertinoTextThemeData(),
-        Colors.white,
-        Colors.white,
+      cupertinoOverrideTheme: CupertinoThemeData(
+        brightness: brightness,
+        primaryColor: Colors.blue,
+        primaryContrastingColor: Colors.blue,
+        textTheme: const CupertinoTextThemeData(),
+        barBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
       ),
     );

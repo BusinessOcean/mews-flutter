@@ -1,0 +1,24 @@
+name: DCM
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  dcm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install DCM
+        uses: CQLabs/setup-dcm@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          version: "1.12.1"
+
+      - uses: ./.github/actions/setup
+
+      - name: Dart Code Metrics
+        run: melos exec -c 1 --ignore="*example*" -- dcm analyze --fatal-style --fatal-performance --fatal-warnings --ci-key=${{ secrets.DCM_CI_KEY }} --email=${{ vars.DCM_CI_EMAIL }} .

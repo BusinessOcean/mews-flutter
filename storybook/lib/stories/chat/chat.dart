@@ -4,7 +4,7 @@ import 'package:optimus/optimus.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final chatStory = Story(
-  name: 'General/Chat/Chat',
+  name: 'Forms/Chat/Chat',
   builder: (context) {
     final k = context.knobs;
 
@@ -28,8 +28,6 @@ final chatStory = Story(
     );
   },
 );
-
-Future<MessageState> onTryAgainClicked(dynamic _) async => MessageState.sent;
 
 const _avatarUrl =
     'https://images.unsplash.com/photo-1560525821-d5615ef80c69?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=512&q=80';

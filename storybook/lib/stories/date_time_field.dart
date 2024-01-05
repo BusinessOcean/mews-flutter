@@ -3,7 +3,7 @@ import 'package:optimus/optimus.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story dateTimeFieldStory = Story(
-  name: 'Forms/Date time field',
+  name: 'Forms/Date Time Field',
   builder: (context) => _Content(k: context.knobs),
 );
 
@@ -25,6 +25,9 @@ class _ContentState extends State<_Content> {
     _dateTime = DateTime.now();
   }
 
+  void _handleChanged(DateTime? dateTime) =>
+      setState(() => _dateTime = dateTime);
+
   @override
   Widget build(BuildContext context) => ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 400),
@@ -40,9 +43,7 @@ class _ContentState extends State<_Content> {
 
             return '${d.day}/${d.month}/${d.year} ${hours.padded()}:${d.minute.padded()} $am';
           },
-          onChanged: (v) => setState(() {
-            _dateTime = v;
-          }),
+          onChanged: _handleChanged,
         ),
       );
 }

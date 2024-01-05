@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
 import 'package:optimus/src/button/common.dart';
+import 'package:optimus/src/common/gesture_wrapper.dart';
 import 'package:optimus/src/overlay_controller.dart';
 import 'package:optimus/src/typography/presets.dart';
 
@@ -12,7 +13,7 @@ class BaseDropDownButton<T> extends StatefulWidget {
     this.onItemSelected,
     this.size = OptimusWidgetSize.large,
     this.variant = OptimusDropdownButtonVariant.defaultButton,
-    this.borderRadius = const BorderRadius.all(borderRadius50),
+    this.borderRadius,
   });
 
   /// Typically the button's label.
@@ -22,7 +23,7 @@ class BaseDropDownButton<T> extends StatefulWidget {
   final ValueSetter<T>? onItemSelected;
   final OptimusWidgetSize size;
   final OptimusDropdownButtonVariant variant;
-  final BorderRadius borderRadius;
+  final BorderRadius? borderRadius;
 
   @override
   State<BaseDropDownButton<T>> createState() => _BaseDropDownButtonState<T>();
@@ -37,8 +38,8 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
 
   final _selectFieldKey = GlobalKey();
   final _node = FocusNode();
-  bool _isHovering = false;
-  bool _isTappedDown = false;
+  bool _isHovered = false;
+  bool _isPressed = false;
   late final AnimationController _controller;
   late final Animation<double> _iconTurns;
 
@@ -62,35 +63,47 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
     super.dispose();
   }
 
-  void _onHoverChanged(bool isHovering) {
-    setState(() => _isHovering = isHovering);
-  }
-
   void _onFocusChanged() => setState(() {});
+
+  void _handleHoverChanged(bool isHovered) =>
+      setState(() => _isHovered = isHovered);
+
+  void _handlePressedChanged(bool isPressed) =>
+      setState(() => _isPressed = isPressed);
 
   bool get _isEnabled => widget.onItemSelected != null;
 
-  Color get _textColor => widget.variant.textColor(theme);
+  Color get _textColor => widget.variant.toButtonVariant().foregroundColor(
+        tokens,
+        isEnabled: _isEnabled,
+        isPressed: _isPressed,
+        isHovered: _isHovered,
+      );
 
-  Color get _highlightColor => widget.variant.highlightColor(theme);
-
-  Color get _hoverColor => widget.variant.hoverColor(theme);
-
-  Color get _normalColor => widget.variant.normalColor(theme);
+  Color? get _borderColor => widget.variant.toButtonVariant().borderColor(
+        tokens,
+        isHovered: _isHovered,
+        isPressed: _isPressed,
+        isEnabled: _isEnabled,
+      );
 
   TextStyle get _labelStyle => widget.size == OptimusWidgetSize.small
       ? preset200b.copyWith(color: _textColor)
       : preset300b.copyWith(color: _textColor);
 
-  Color get _color => _node.hasFocus || _isTappedDown
-      ? _highlightColor
-      : _isHovering
-          ? _hoverColor
-          : _normalColor;
+  Color? get _color => widget.variant.toButtonVariant().backgroundColor(
+        tokens,
+        isEnabled: _isEnabled,
+        isPressed: _isPressed,
+        isHovered: _isHovered,
+      );
 
   @override
   Widget build(BuildContext context) {
     final child = widget.child;
+    final borderColor = this._borderColor;
+    final borderRadius = widget.borderRadius ??
+        BorderRadius.circular(context.tokens.borderRadius50);
 
     return OverlayController(
       items: widget.items,
@@ -100,50 +113,51 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
       width: _dropdownWidth,
       onShown: _controller.forward,
       onHidden: _controller.reverse,
-      child: OptimusEnabled(
-        isEnabled: _isEnabled,
-        child: MouseRegion(
-          onEnter: (_) => _onHoverChanged(true),
-          onExit: (_) => _onHoverChanged(false),
-          child: GestureDetector(
-            onTap: _node.requestFocus,
-            onTapDown: (_) => setState(() => _isTappedDown = true),
-            onTapUp: (_) => setState(() => _isTappedDown = false),
-            onTapCancel: () => setState(() => _isTappedDown = false),
-            child: Focus(
-              focusNode: _node,
-              child: SizedBox(
-                height: widget.size.value,
-                child: AnimatedContainer(
-                  padding: const EdgeInsets.symmetric(horizontal: spacing200),
-                  key: _selectFieldKey,
-                  decoration: BoxDecoration(
-                    color: _color,
-                    borderRadius: widget.borderRadius,
-                  ),
-                  duration: buttonAnimationDuration,
-                  curve: Curves.fastOutSlowIn,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (child != null)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: DefaultTextStyle.merge(
-                            style: _labelStyle,
-                            child: child,
-                          ),
-                        ),
-                      RotationTransition(
-                        turns: _iconTurns,
-                        child: Icon(
-                          OptimusIcons.chevron_down,
-                          size: widget.size.iconSize,
-                          color: _textColor,
+      child: IgnorePointer(
+        ignoring: !_isEnabled,
+        child: GestureWrapper(
+          onHoverChanged: _handleHoverChanged,
+          onPressedChanged: _handlePressedChanged,
+          onTap: _node.requestFocus,
+          child: Focus(
+            focusNode: _node,
+            child: SizedBox(
+              height: widget.size.value,
+              child: AnimatedContainer(
+                padding: const EdgeInsets.symmetric(horizontal: spacing200),
+                key: _selectFieldKey,
+                decoration: BoxDecoration(
+                  color: _color,
+                  borderRadius: borderRadius,
+                  border: borderColor != null
+                      ? Border.all(
+                          color: borderColor,
+                          width: context.tokens.borderWidth100,
+                        )
+                      : null,
+                ),
+                duration: buttonAnimationDuration,
+                curve: buttonAnimationCurve,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (child != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: DefaultTextStyle.merge(
+                          style: _labelStyle,
+                          child: child,
                         ),
                       ),
-                    ],
-                  ),
+                    RotationTransition(
+                      turns: _iconTurns,
+                      child: Icon(
+                        OptimusIcons.chevron_down,
+                        size: widget.size.iconSize,
+                        color: _textColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -157,60 +171,8 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
 const double _dropdownWidth = 280;
 
 extension on OptimusWidgetSize {
-  double get iconSize {
-    switch (this) {
-      case OptimusWidgetSize.small:
-        return 16;
-      case OptimusWidgetSize.medium:
-      case OptimusWidgetSize.large:
-        return 24;
-    }
-  }
-}
-
-extension on OptimusDropdownButtonVariant {
-  Color normalColor(OptimusThemeData theme) {
-    switch (this) {
-      case OptimusDropdownButtonVariant.defaultButton:
-        return theme.colors.neutral50;
-      case OptimusDropdownButtonVariant.primary:
-        return theme.colors.primary500;
-      case OptimusDropdownButtonVariant.text:
-        return Colors.transparent;
-    }
-  }
-
-  Color hoverColor(OptimusThemeData theme) {
-    switch (this) {
-      case OptimusDropdownButtonVariant.defaultButton:
-        return theme.colors.neutral100;
-      case OptimusDropdownButtonVariant.primary:
-        return theme.colors.primary700;
-      case OptimusDropdownButtonVariant.text:
-        return theme.colors.neutral500t8;
-    }
-  }
-
-  Color highlightColor(OptimusThemeData theme) {
-    switch (this) {
-      case OptimusDropdownButtonVariant.defaultButton:
-        return theme.colors.neutral200;
-      case OptimusDropdownButtonVariant.primary:
-        return theme.colors.primary900;
-      case OptimusDropdownButtonVariant.text:
-        return theme.colors.neutral500t16;
-    }
-  }
-
-  // TODO(VG): can be changed when final dark theme design is ready.
-  Color textColor(OptimusThemeData theme) {
-    switch (this) {
-      case OptimusDropdownButtonVariant.primary:
-        return theme.colors.neutral0;
-      case OptimusDropdownButtonVariant.defaultButton:
-        return theme.colors.neutral500;
-      case OptimusDropdownButtonVariant.text:
-        return theme.isDark ? theme.colors.neutral0 : theme.colors.neutral500;
-    }
-  }
+  double get iconSize => switch (this) {
+        OptimusWidgetSize.small => 16,
+        OptimusWidgetSize.medium || OptimusWidgetSize.large => 24,
+      };
 }

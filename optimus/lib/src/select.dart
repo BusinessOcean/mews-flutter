@@ -55,14 +55,17 @@ class _OptimusSelectState<T> extends State<OptimusSelect<T>> with ThemeGetter {
     super.dispose();
   }
 
+  void _handleOpenedChanged(bool isOpened) =>
+      setState(() => _isOpened = isOpened);
+
   @override
   Widget build(BuildContext context) => OverlayController(
         onItemSelected: widget.onItemSelected,
         focusNode: _node,
         anchorKey: _selectFieldKey,
         items: widget.items,
-        onShown: () => setState(() => _isOpened = true),
-        onHidden: () => setState(() => _isOpened = false),
+        onShown: () => _handleOpenedChanged(true),
+        onHidden: () => _handleOpenedChanged(false),
         child: GestureDetector(
           onTap: () => widget.isEnabled ? _node.requestFocus() : null,
           child: Focus(
@@ -77,7 +80,7 @@ class _OptimusSelectState<T> extends State<OptimusSelect<T>> with ThemeGetter {
               prefix: widget.prefix,
               suffix: _icon,
               caption: widget.caption,
-              secondaryCaption: widget.secondaryCaption,
+              helperMessage: widget.secondaryCaption,
               children: [
                 _SelectedValue(
                   size: widget.size,
@@ -108,23 +111,14 @@ class _OptimusSelectState<T> extends State<OptimusSelect<T>> with ThemeGetter {
       );
 
   TextStyle get _textStyle {
-    if (widget.value == null) {
-      switch (widget.size) {
-        case OptimusWidgetSize.small:
-          return preset200s.copyWith(color: _placeholderColor);
-        case OptimusWidgetSize.medium:
-        case OptimusWidgetSize.large:
-          return preset300s.copyWith(color: _placeholderColor);
-      }
-    } else {
-      switch (widget.size) {
-        case OptimusWidgetSize.small:
-          return preset200s.copyWith(color: _textColor);
-        case OptimusWidgetSize.medium:
-        case OptimusWidgetSize.large:
-          return preset300s.copyWith(color: _textColor);
-      }
-    }
+    final color = widget.value == null ? _placeholderColor : _textColor;
+
+    return switch (widget.size) {
+      OptimusWidgetSize.small => preset200s.copyWith(color: color),
+      OptimusWidgetSize.medium ||
+      OptimusWidgetSize.large =>
+        preset300s.copyWith(color: color),
+    };
   }
 
   Color get _placeholderColor =>
@@ -147,26 +141,11 @@ class _SelectedValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildBorderContainer(),
-          ],
-        ),
-      );
-
-  Widget _buildBorderContainer() => Padding(
-        padding: const EdgeInsets.only(left: 16, right: 8),
-        child: SizedBox(
-          height: size.value,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              DefaultTextStyle(
-                style: textStyle,
-                child: child,
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.only(left: spacing200, right: spacing100),
+          child: SizedBox(
+            height: size.value,
+            child: DefaultTextStyle(style: textStyle, child: child),
           ),
         ),
       );

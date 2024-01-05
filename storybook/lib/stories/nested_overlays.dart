@@ -6,17 +6,17 @@ import 'package:storybook/stories/select_input.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story nestedSelectStory = Story(
-  name: 'Nested overlays/Nested Select',
+  name: 'Helpers/Nested overlays/Nested Select',
   builder: (context) => _Content((_) => SelectInputStory(context.knobs)),
 );
 
 final Story nestedSearchStory = Story(
-  name: 'Nested overlays/Nested Search',
+  name: 'Helpers/Nested overlays/Nested Search',
   builder: (context) => _Content((_) => SearchStory(context.knobs)),
 );
 
 final Story nestedNonModalDialogStory = Story(
-  name: 'Nested overlays/Nested Non-modal dialog',
+  name: 'Helpers/Nested overlays/Nested Non-modal Dialog',
   builder: (context) => _Content(
     (_) => Center(
       child: DialogWrapper(child: NonModalDialogStory(context.knobs)),
@@ -29,7 +29,7 @@ class _Content extends StatelessWidget {
 
   final WidgetBuilder contentBuilder;
 
-  Route<dynamic> _onGenerateRoute(RouteSettings settings) {
+  Route<dynamic> _handleGenerateRoute(RouteSettings settings) {
     late WidgetBuilder builder;
     switch (settings.name) {
       case 'initialRoute':
@@ -37,7 +37,6 @@ class _Content extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 400),
               child: contentBuilder(context),
             );
-        break;
     }
 
     return MaterialPageRoute<dynamic>(
@@ -55,7 +54,7 @@ class _Content extends StatelessWidget {
           Expanded(
             child: Navigator(
               initialRoute: 'initialRoute',
-              onGenerateRoute: _onGenerateRoute,
+              onGenerateRoute: _handleGenerateRoute,
             ),
           ),
           const _Bar(),

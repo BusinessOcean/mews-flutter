@@ -40,6 +40,8 @@ class OptimusSelectInput<T> extends StatefulWidget {
     this.embeddedSearch,
     this.groupBy,
     this.groupBuilder,
+    this.multiselect = false,
+    this.selectedValues,
   });
 
   /// Describes the purpose of the select field.
@@ -90,6 +92,14 @@ class OptimusSelectInput<T> extends StatefulWidget {
   /// {@endtemplate}
   final GroupBuilder? groupBuilder;
 
+  /// If enabled, you can select multiple items at the same time.
+  /// State of the selected items is managed outside this widget and has to be
+  /// set in [selectedValues].
+  final bool multiselect;
+
+  /// List of selected values. Would be omitted if the multiselect is disabled.
+  final List<T>? selectedValues;
+
   @override
   State<OptimusSelectInput<T>> createState() => _OptimusSelectInput<T>();
 }
@@ -105,7 +115,6 @@ class _OptimusSelectInput<T> extends State<OptimusSelectInput<T>>
   late final Animation<double> _iconTurns;
 
   TextEditingController? _controller;
-
   FocusNode? _focusNode;
 
   FocusNode get _effectiveFocusNode =>
@@ -114,7 +123,7 @@ class _OptimusSelectInput<T> extends State<OptimusSelectInput<T>>
   TextEditingController get _effectiveController =>
       widget.controller ?? (_controller ??= TextEditingController());
 
-  void _onFocusChanged() {
+  void _handleFocusChange() {
     if (!_isUsingEmbeddedSearch) {
       if (_effectiveFocusNode.hasFocus) {
         _animationController.forward();
@@ -125,25 +134,24 @@ class _OptimusSelectInput<T> extends State<OptimusSelectInput<T>>
     }
   }
 
-  void _onTextUpdated() {
-    widget.onTextChanged?.call(_effectiveController.text);
-  }
+  void _handleTextUpdate() =>
+      widget.onTextChanged?.call(_effectiveController.text);
 
   @override
   void didUpdateWidget(OptimusSelectInput<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       _effectiveController
-        ..removeListener(_onTextUpdated)
-        ..addListener(_onTextUpdated);
+        ..removeListener(_handleTextUpdate)
+        ..addListener(_handleTextUpdate);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _effectiveFocusNode.addListener(_onFocusChanged);
-    _effectiveController.addListener(_onTextUpdated);
+    _effectiveFocusNode.addListener(_handleFocusChange);
+    _effectiveController.addListener(_handleTextUpdate);
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 350),
       vsync: this,
@@ -153,9 +161,9 @@ class _OptimusSelectInput<T> extends State<OptimusSelectInput<T>>
 
   @override
   void dispose() {
-    _effectiveFocusNode.removeListener(_onFocusChanged);
+    _effectiveFocusNode.removeListener(_handleFocusChange);
     _focusNode?.dispose();
-    _effectiveController.removeListener(_onTextUpdated);
+    _effectiveController.removeListener(_handleTextUpdate);
     _controller?.dispose();
     _animationController.dispose();
     super.dispose();
@@ -167,50 +175,33 @@ class _OptimusSelectInput<T> extends State<OptimusSelectInput<T>>
   bool get _isUsingEmbeddedSearch =>
       widget.embeddedSearch != null && !_isUsingInlineSearch;
 
-  Widget get _icon => RotationTransition(
-        turns: _iconTurns,
-        child: Icon(
-          OptimusIcons.chevron_down,
-          size: 24,
-          color: theme.isDark ? theme.colors.neutral0 : theme.colors.neutral400,
-        ),
-      );
+  TextStyle get _textStyle => switch (widget.size) {
+        OptimusWidgetSize.small => preset200s.copyWith(color: _textColor),
+        OptimusWidgetSize.medium ||
+        OptimusWidgetSize.large =>
+          preset300s.copyWith(color: _textColor),
+      };
 
-  TextStyle get _textStyle {
-    if (widget.value == null) {
-      switch (widget.size) {
-        case OptimusWidgetSize.small:
-          return preset200s.copyWith(color: _placeholderColor);
-        case OptimusWidgetSize.medium:
-        case OptimusWidgetSize.large:
-          return preset300s.copyWith(color: _placeholderColor);
-      }
-    } else {
-      switch (widget.size) {
-        case OptimusWidgetSize.small:
-          return preset200s.copyWith(color: _textColor);
-        case OptimusWidgetSize.medium:
-        case OptimusWidgetSize.large:
-          return preset300s.copyWith(color: _textColor);
-      }
-    }
-  }
+  Color get _textColor =>
+      _value == null ? _placeholderColor : _defaultTextColor;
 
   Color get _placeholderColor =>
       theme.isDark ? theme.colors.neutral0t64 : theme.colors.neutral1000t64;
 
-  Color get _textColor =>
+  Color get _defaultTextColor =>
       theme.isDark ? theme.colors.neutral0 : theme.colors.neutral1000;
+
+  T? get _value => widget.multiselect ? null : widget.value;
 
   @override
   Widget build(BuildContext context) => DropdownSelect<T>(
         label: widget.label,
-        placeholder: widget.value?.let(widget.builder) ?? widget.placeholder,
+        placeholder: _value?.let(widget.builder) ?? widget.placeholder,
         items: widget.items,
         isEnabled: widget.isEnabled,
         isRequired: widget.isRequired,
         caption: widget.caption,
-        secondaryCaption: widget.secondaryCaption,
+        helperMessage: widget.secondaryCaption,
         error: widget.error,
         size: widget.size,
         onChanged: widget.onChanged,
@@ -218,14 +209,15 @@ class _OptimusSelectInput<T> extends State<OptimusSelectInput<T>>
         leading: widget.leading,
         suffix: widget.suffix,
         trailing: widget.trailing,
-        trailingImplicit: _icon,
+        trailingImplicit:
+            RotationTransition(turns: _iconTurns, child: const _Chevron()),
         focusNode: _effectiveFocusNode,
         placeholderStyle: _textStyle,
         controller: _effectiveController,
         readOnly: widget.readOnly ?? !_isUsingInlineSearch,
         showCursor: _isUsingInlineSearch,
         showLoader: widget.showLoader,
-        shouldCloseOnInputTap: !_isUsingInlineSearch,
+        shouldCloseOnInputTap: !widget.multiselect || !_isUsingInlineSearch,
         emptyResultPlaceholder: widget.emptyResultPlaceholder,
         embeddedSearch: _isUsingEmbeddedSearch ? widget.embeddedSearch : null,
         onDropdownShow:
@@ -234,5 +226,21 @@ class _OptimusSelectInput<T> extends State<OptimusSelectInput<T>>
             _isUsingEmbeddedSearch ? _animationController.reverse : null,
         groupBy: widget.groupBy,
         groupBuilder: widget.groupBuilder,
+        multiselect: widget.multiselect,
+        selectedValues: widget.selectedValues,
+        builder: widget.builder,
       );
+}
+
+class _Chevron extends StatelessWidget {
+  const _Chevron();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = OptimusTheme.of(context);
+    final color =
+        theme.isDark ? theme.colors.neutral0 : theme.colors.neutral400;
+
+    return Icon(OptimusIcons.chevron_down, size: 24, color: color);
+  }
 }

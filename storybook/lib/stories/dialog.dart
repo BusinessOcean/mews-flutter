@@ -4,7 +4,7 @@ import 'package:storybook/utils.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story dialogStory = Story(
-  name: 'General/Dialogs/Modal dialog',
+  name: 'Layout/Dialogs/Modal Dialog',
   builder: (context) {
     final k = context.knobs;
     final isDismissible = k.boolean(label: 'Dismissible', initial: true);
@@ -31,7 +31,7 @@ final Story dialogStory = Story(
               children: [
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showOneActionDialog(
+                  onPressed: () => _handleShowOneActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.small,
@@ -43,7 +43,7 @@ final Story dialogStory = Story(
                 ),
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showTwoActionDialog(
+                  onPressed: () => _handleShowTwoActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.small,
@@ -55,7 +55,7 @@ final Story dialogStory = Story(
                 ),
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showThreeActionDialog(
+                  onPressed: () => _handleShowThreeActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.small,
@@ -76,7 +76,7 @@ final Story dialogStory = Story(
               children: [
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showOneActionDialog(
+                  onPressed: () => _handleShowOneActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.regular,
@@ -88,7 +88,7 @@ final Story dialogStory = Story(
                 ),
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showTwoActionDialog(
+                  onPressed: () => _handleShowTwoActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.regular,
@@ -100,7 +100,7 @@ final Story dialogStory = Story(
                 ),
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showThreeActionDialog(
+                  onPressed: () => _handleShowThreeActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.regular,
@@ -121,7 +121,7 @@ final Story dialogStory = Story(
               children: [
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showOneActionDialog(
+                  onPressed: () => _handleShowOneActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.large,
@@ -133,7 +133,7 @@ final Story dialogStory = Story(
                 ),
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showTwoActionDialog(
+                  onPressed: () => _handleShowTwoActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.large,
@@ -145,7 +145,7 @@ final Story dialogStory = Story(
                 ),
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showThreeActionDialog(
+                  onPressed: () => _handleShowThreeActionDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.large,
@@ -166,7 +166,7 @@ final Story dialogStory = Story(
               children: [
                 OptimusButton(
                   variant: OptimusButtonVariant.primary,
-                  onPressed: () => _showCustomContentDialog(
+                  onPressed: () => _handleShowCustomContentDialog(
                     context: context,
                     isDismissible: isDismissible,
                     size: OptimusDialogSize.large,
@@ -184,7 +184,7 @@ final Story dialogStory = Story(
   },
 );
 
-Future<void> _showThreeActionDialog({
+Future<void> _handleShowThreeActionDialog({
   required BuildContext context,
   required bool isDismissible,
   required OptimusDialogSize size,
@@ -206,7 +206,7 @@ Future<void> _showThreeActionDialog({
       ],
     );
 
-Future<void> _showTwoActionDialog({
+Future<void> _handleShowTwoActionDialog({
   required BuildContext context,
   required bool isDismissible,
   required OptimusDialogSize size,
@@ -227,7 +227,7 @@ Future<void> _showTwoActionDialog({
       ],
     );
 
-Future<void> _showOneActionDialog({
+Future<void> _handleShowOneActionDialog({
   required BuildContext context,
   required bool isDismissible,
   required OptimusDialogSize size,
@@ -245,7 +245,7 @@ Future<void> _showOneActionDialog({
       actions: const [OptimusDialogAction(title: Text('Close'))],
     );
 
-Future<void> _showCustomContentDialog({
+Future<void> _handleShowCustomContentDialog({
   required BuildContext context,
   required bool isDismissible,
   required OptimusDialogSize size,
@@ -261,8 +261,8 @@ Future<void> _showCustomContentDialog({
     content: Container(
       color: theme.isDark ? theme.colors.neutral400 : theme.colors.neutral100,
       padding: const EdgeInsets.all(8),
-      child: Column(
-        children: const [
+      child: const Column(
+        children: [
           Center(child: Text('Custom content without paddings')),
           OptimusInputField(
             placeholder: 'Input field to test offsets on keyboard',

@@ -3,7 +3,7 @@ import 'package:optimus/optimus.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 final Story numberPickerStory = Story(
-  name: 'Forms/Number picker',
+  name: 'Forms/Number Picker',
   builder: (context) {
     final k = context.knobs;
 
@@ -30,15 +30,17 @@ class _Content extends StatefulWidget {
 class _ContentState extends State<_Content> {
   int? _value = 8;
 
+  void _handleChanged(int? value) => setState(() => _value = value);
+
   @override
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Current value: $_value'),
+          Text('Current value: ${_value ?? 0}'),
           const SizedBox(height: 16),
           OptimusNumberPickerFormField(
             enabled: widget.isEnabled,
-            onChanged: (v) => setState(() => _value = v),
+            onChanged: _handleChanged,
             initialValue: 8,
             min: 5,
             max: 15,

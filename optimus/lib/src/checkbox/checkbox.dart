@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
+import 'package:optimus/src/checkbox/checkbox_tick.dart';
 import 'package:optimus/src/common/group_wrapper.dart';
 import 'package:optimus/src/typography/presets.dart';
 
@@ -19,7 +20,7 @@ enum OptimusCheckboxSize {
 /// or more options for a limited number of choices. Each selection is
 /// independent (with exceptions). If [tristate] is enabled, checkbox can be in
 /// three states: checked, unchecked and indeterminate.
-class OptimusCheckbox extends StatefulWidget {
+class OptimusCheckbox extends StatelessWidget {
   const OptimusCheckbox({
     super.key,
     required this.label,
@@ -34,26 +35,39 @@ class OptimusCheckbox extends StatefulWidget {
           'isChecked must be set if tristate is false',
         );
 
+  /// {@template optimus.checkbox.label}
   /// Label displayed next to checkbox.
   ///
   /// Typically a [Text] widget.
+  /// {@endtemplate}
   final Widget label;
 
+  /// {@template optimus.checkbox.isChecked}
   /// Whether this checkbox is checked.
+  /// {@endtemplate}
   final bool? isChecked;
 
+  /// {@template optimus.checkbox.tristate}
   /// Whether this checkbox has 3 states.
+  /// {@endtemplate}
   final bool tristate;
 
+  /// {@template optimus.checkbox.error}
   /// Controls error that appears below checkbox.
+  /// {@endtemplate}
   final String? error;
 
+  /// {@template optimus.checkbox.isEnabled}
   /// Whether this widget is enabled.
+  /// {@endtemplate}
   final bool isEnabled;
 
+  /// {@template optimus.checkbox.size}
   /// Controls size of the label.
+  /// {@endtemplate}
   final OptimusCheckboxSize size;
 
+  /// {@template optimus.checkbox.onChanged}
   /// Called when the user clicks on this check button.
   ///
   /// The checkbox button passes `value` as a parameter to this callback.
@@ -74,158 +88,73 @@ class OptimusCheckbox extends StatefulWidget {
   ///   },
   /// )
   /// ```
+  /// {@endtemplate}
   final ValueChanged<bool> onChanged;
 
-  @override
-  State<OptimusCheckbox> createState() => _OptimusCheckboxState();
-}
+  Color _labelColor(OptimusTokens tokens) =>
+      isEnabled ? tokens.textStaticPrimary : tokens.textDisabled;
 
-class _OptimusCheckboxState extends State<OptimusCheckbox> with ThemeGetter {
-  bool _isHovering = false;
-  bool _isTappedDown = false;
+  TextStyle _labelStyle(OptimusTokens tokens) {
+    final color = _labelColor(tokens);
 
-  Color get _borderColor {
-    switch (_state) {
-      case _CheckboxState.checked:
-      case _CheckboxState.undetermined:
-        return theme.colors.primary500;
-      case _CheckboxState.unchecked:
-        return _isHovering || _isTappedDown
-            ? theme.colors.primary500
-            : theme.colors.neutral100;
+    return switch (size) {
+      OptimusCheckboxSize.large => preset300s.copyWith(color: color),
+      OptimusCheckboxSize.small => preset200s.copyWith(color: color),
+    };
+  }
+
+  bool get _isError {
+    if (error case final error?) {
+      return error.isNotEmpty;
     }
+
+    return false;
   }
 
-  Color get _backgroundColor {
-    switch (_state) {
-      case _CheckboxState.undetermined:
-      case _CheckboxState.checked:
-        return theme.colors.primary500;
-      case _CheckboxState.unchecked:
-        return _isHovering || _isTappedDown
-            ? theme.colors.primary500t8
-            : Colors.transparent;
-    }
-  }
-
-  _CheckboxState get _state => widget.isChecked.toState;
-
-  TextStyle get _labelStyle {
-    final color = theme.colors.defaultTextColor;
-    switch (widget.size) {
-      case OptimusCheckboxSize.large:
-        return preset300s.copyWith(color: color);
-      case OptimusCheckboxSize.small:
-        return preset200s.copyWith(color: color);
-    }
-  }
-
-  void _onTap() {
-    final newValue = widget.isChecked ?? false;
-    widget.onChanged.call(!newValue);
-  }
-
-  void _onHoverChanged(bool hovered) {
-    setState(() => _isHovering = hovered);
+  void _handleTap() {
+    final newValue = isChecked ?? false;
+    onChanged(!newValue);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final label = Padding(
-      padding: const EdgeInsets.fromLTRB(
-        spacing100,
-        spacing50,
-        spacing0,
-        spacing50,
-      ),
-      child: DefaultTextStyle.merge(style: _labelStyle, child: widget.label),
-    );
-
-    return OptimusEnabled(
-      isEnabled: widget.isEnabled,
-      child: GroupWrapper(
-        error: widget.error,
-        child: GestureDetector(
-          onTap: _onTap,
-          onTapDown: (_) => setState(() => _isTappedDown = true),
-          onTapUp: (_) => setState(() => _isTappedDown = false),
-          onTapCancel: () => setState(() => _isTappedDown = false),
-          child: MouseRegion(
-            onEnter: (_) => _onHoverChanged(true),
-            onExit: (_) => _onHoverChanged(false),
+  Widget build(BuildContext context) => IgnorePointer(
+        ignoring: !isEnabled,
+        child: GroupWrapper(
+          error: error,
+          isEnabled: isEnabled,
+          child: GestureDetector(
+            onTap: _handleTap,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 9),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: _backgroundColor,
-                      border: Border.all(color: _borderColor, width: 1),
-                      borderRadius: const BorderRadius.all(borderRadius25),
+                  child: CheckboxTick(
+                    isError: _isError,
+                    isChecked: isChecked,
+                    isEnabled: isEnabled,
+                    onChanged: onChanged,
+                    onTap: _handleTap,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      spacing150,
+                      spacing50,
+                      spacing0,
+                      spacing50,
                     ),
-                    width: 16,
-                    height: 16,
-                    child: _CheckboxIcon(
-                      icon: _state.icon,
+                    child: DefaultTextStyle.merge(
+                      style: _labelStyle(OptimusTheme.of(context).tokens),
+                      child: label,
                     ),
                   ),
                 ),
-                Expanded(child: label),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _CheckboxIcon extends StatelessWidget {
-  const _CheckboxIcon({this.icon});
-
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = OptimusTheme.of(context);
-
-    return icon == null
-        ? const SizedBox.shrink()
-        : Center(
-            child: Icon(
-              icon,
-              size: 10,
-              color: theme.colors.neutral0,
-            ),
-          );
-  }
-}
-
-enum _CheckboxState { checked, unchecked, undetermined }
-
-extension on _CheckboxState {
-  IconData? get icon {
-    switch (this) {
-      case _CheckboxState.checked:
-        return OptimusIcons.done;
-      case _CheckboxState.unchecked:
-        return null;
-      case _CheckboxState.undetermined:
-        return OptimusIcons.minus_simple;
-    }
-  }
-}
-
-extension on bool? {
-  _CheckboxState get toState {
-    switch (this) {
-      case true:
-        return _CheckboxState.checked;
-      case false:
-        return _CheckboxState.unchecked;
-      default:
-        return _CheckboxState.undetermined;
-    }
-  }
+      );
 }

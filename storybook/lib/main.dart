@@ -13,6 +13,7 @@ import 'package:storybook/stories/chat/chat.dart';
 import 'package:storybook/stories/checkbox.dart';
 import 'package:storybook/stories/checkbox_group.dart';
 import 'package:storybook/stories/checkbox_nested.dart';
+import 'package:storybook/stories/chip.dart';
 import 'package:storybook/stories/compact_step_bar.dart';
 import 'package:storybook/stories/date_input_field.dart';
 import 'package:storybook/stories/date_input_form_field.dart';
@@ -44,8 +45,10 @@ import 'package:storybook/stories/slidable.dart';
 import 'package:storybook/stories/spacing.dart';
 import 'package:storybook/stories/stack.dart';
 import 'package:storybook/stories/step_bar.dart';
-import 'package:storybook/stories/tabs.dart';
+import 'package:storybook/stories/tab/tab.dart';
+import 'package:storybook/stories/tab/tabs.dart';
 import 'package:storybook/stories/tags.dart';
+import 'package:storybook/stories/toggle.dart';
 import 'package:storybook/stories/tooltip.dart';
 import 'package:storybook/stories/tooltip_wrapper.dart';
 import 'package:storybook/stories/typography/caption.dart';
@@ -53,6 +56,7 @@ import 'package:storybook/stories/typography/highlight.dart';
 import 'package:storybook/stories/typography/label.dart';
 import 'package:storybook/stories/typography/paragraph.dart';
 import 'package:storybook/stories/typography/title.dart';
+import 'package:storybook/stories/welcome.dart';
 import 'package:storybook/stories/wide_banner.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
@@ -73,94 +77,92 @@ class _MyAppState extends State<MyApp> {
           .getString(_keyTheme)
           .toThemeMode();
 
-  Future<void> _saveThemeMode(ThemeMode themeMode) async =>
+  Future<void> _handleThemeChanged(ThemeMode themeMode) async =>
       (await SharedPreferences.getInstance())
           .setString(_keyTheme, themeMode.name);
 
   @override
   Widget build(BuildContext context) => FutureBuilder<ThemeMode>(
         future: _theme,
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-              return const CircularProgressIndicator();
-            case ConnectionState.active:
-            case ConnectionState.done:
-              return Storybook(
-                plugins: [
-                  const ContentsPlugin(sidePanel: true),
-                  KnobsPlugin(sidePanel: true),
-                  ThemeModePlugin(
-                    initialTheme: snapshot.data,
-                    onThemeChanged: _saveThemeMode,
-                  ),
-                  DeviceFramePlugin(initialData: const DeviceFrameData()),
-                ],
-                stories: [
-                  formStory,
-                  avatarStory,
-                  button,
-                  dividerStory,
-                  dropdownButton,
-                  iconButton,
-                  splitButton,
-                  selectInputStory,
-                  checkbox,
-                  checkboxGroup,
-                  checkboxNestedGroup,
-                  inputStory,
-                  searchFieldStory,
-                  dateInputStory,
-                  dateInputFormFieldStory,
-                  numberPickerStory,
-                  spacingStory,
-                  tagStory,
-                  bannerStory,
-                  wideBannerStory,
-                  interactiveTagStory,
-                  allIconsStory,
-                  iconStory,
-                  logoStory,
-                  supplementaryIconStory,
-                  iconListStory,
-                  cardStory,
-                  nestedCardStory,
-                  radioStory,
-                  radioGroupStory,
-                  dialogStory,
-                  nonModalDialogStory,
-                  inlineDialogStory,
-                  stackStory,
-                  stepBarStory,
-                  compactStepBarStory,
-                  badgeStory,
-                  listTileStory,
-                  navListTileStory,
-                  expandedListTileStory,
-                  tabs,
-                  segmentedControlStory,
-                  slidableStory,
-                  nestedSelectStory,
-                  nestedSearchStory,
-                  nestedNonModalDialogStory,
-                  titleStory,
-                  paragraphStory,
-                  labelStory,
-                  captionStory,
-                  highlightStory,
-                  chatStory,
-                  chatBubbleStory,
-                  standaloneLink,
-                  inlineLink,
-                  loaderStory,
-                  dateTimeFieldStory,
-                  notificationStory,
-                  tooltipStory,
-                  tooltipWrapperStory,
-                ],
-              );
-          }
+        builder: (context, snapshot) => switch (snapshot.connectionState) {
+          ConnectionState.none ||
+          ConnectionState.waiting =>
+            const CircularProgressIndicator(),
+          ConnectionState.active || ConnectionState.done => Storybook(
+              plugins: [
+                ThemeModePlugin(
+                  initialTheme: snapshot.data,
+                  onThemeChanged: _handleThemeChanged,
+                ),
+                DeviceFramePlugin(),
+              ],
+              initialStory: 'Welcome',
+              stories: [
+                welcomeStory,
+                formStory,
+                avatarStory,
+                button,
+                dividerStory,
+                dropdownButton,
+                iconButton,
+                splitButton,
+                selectInputStory,
+                checkbox,
+                checkboxGroup,
+                checkboxNestedGroup,
+                inputStory,
+                searchFieldStory,
+                dateInputStory,
+                dateInputFormFieldStory,
+                numberPickerStory,
+                spacingStory,
+                tagStory,
+                bannerStory,
+                wideBannerStory,
+                allIconsStory,
+                iconStory,
+                logoStory,
+                supplementaryIconStory,
+                iconListStory,
+                cardStory,
+                nestedCardStory,
+                radioStory,
+                radioGroupStory,
+                dialogStory,
+                nonModalDialogStory,
+                inlineDialogStory,
+                stackStory,
+                stepBarStory,
+                compactStepBarStory,
+                badgeStory,
+                listTileStory,
+                navListTileStory,
+                expandedListTileStory,
+                tabStory,
+                tabsStory,
+                segmentedControlStory,
+                slidableStory,
+                nestedSelectStory,
+                nestedSearchStory,
+                nestedNonModalDialogStory,
+                titleStory,
+                paragraphStory,
+                labelStory,
+                captionStory,
+                highlightStory,
+                chatStory,
+                chatBubbleStory,
+                standaloneLink,
+                inlineLink,
+                loaderStory,
+                dateTimeFieldStory,
+                notificationStory,
+                tooltipStory,
+                tooltipWrapperStory,
+                toggleStory,
+                chipStory,
+              ],
+            ),
         },
       );
 }

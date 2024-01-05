@@ -23,9 +23,17 @@ class _CheckboxGroupStoryState extends State<_CheckboxGroupStory> {
   final List<bool> _values = [false, true, false, false, false];
   bool _outsideCheckbox = false;
 
+  void _handleChanged(int position, bool value) =>
+      setState(() => _values[position] = value);
+
+  void _handleOutsideChanged(bool value) =>
+      setState(() => _outsideCheckbox = value);
+
   @override
   Widget build(BuildContext context) {
     final k = widget.knobs;
+
+    final enabled = k.boolean(label: 'Enabled', initial: true);
 
     return Center(
       child: Column(
@@ -34,62 +42,39 @@ class _CheckboxGroupStoryState extends State<_CheckboxGroupStory> {
           OptimusCheckbox(
             label: const Text('Outside Checkbox'),
             isChecked: _outsideCheckbox,
-            onChanged: (bool value) {
-              setState(() {
-                _outsideCheckbox = value;
-              });
-            },
+            isEnabled: enabled,
+            onChanged: _handleOutsideChanged,
           ),
           OptimusNestedCheckboxGroup(
             parent: const Text('Parent'),
-            label: k.text(label: 'Label:'),
+            label: k.text(label: 'Label'),
             error: k.text(label: 'Error'),
-            isEnabled: k.boolean(label: 'Enabled', initial: true),
+            isEnabled: enabled,
             children: [
-              OptimusCheckbox(
+              OptimusNestedCheckbox(
                 label: const Text('Checkbox 1'),
                 isChecked: _values.first,
-                onChanged: (bool value) {
-                  setState(() {
-                    _values.first = value;
-                  });
-                },
+                onChanged: (bool value) => _handleChanged(0, value),
               ),
-              OptimusCheckbox(
+              OptimusNestedCheckbox(
                 label: const Text('Checkbox 2'),
                 isChecked: _values[1],
-                onChanged: (bool value) {
-                  setState(() {
-                    _values[1] = value;
-                  });
-                },
+                onChanged: (bool value) => _handleChanged(1, value),
               ),
-              OptimusCheckbox(
+              OptimusNestedCheckbox(
                 isChecked: _values[2],
                 label: const Text('Checkbox 3'),
-                onChanged: (bool value) {
-                  setState(() {
-                    _values[2] = value;
-                  });
-                },
+                onChanged: (bool value) => _handleChanged(2, value),
               ),
-              OptimusCheckbox(
+              OptimusNestedCheckbox(
                 isChecked: _values[3],
                 label: const Text('Checkbox 4'),
-                onChanged: (bool value) {
-                  setState(() {
-                    _values[3] = value;
-                  });
-                },
+                onChanged: (bool value) => _handleChanged(3, value),
               ),
-              OptimusCheckbox(
+              OptimusNestedCheckbox(
                 isChecked: _values.last,
                 label: const Text('Checkbox 5'),
-                onChanged: (bool value) {
-                  setState(() {
-                    _values.last = value;
-                  });
-                },
+                onChanged: (bool value) => _handleChanged(4, value),
               ),
             ],
           ),

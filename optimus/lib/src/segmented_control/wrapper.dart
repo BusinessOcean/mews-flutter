@@ -47,42 +47,39 @@ class _BorderWrapperState extends State<BorderWrapper> with ThemeGetter {
     final leftPosition =
         (maxWidth / widget.listSize) * widget.selectedItemIndex;
 
-    switch (_position) {
-      case _ItemPosition.first:
-        return leftPosition;
-      case _ItemPosition.inBetween:
-      case _ItemPosition.last:
-        return leftPosition - _borderWidth;
-    }
+    return switch (_position) {
+      _ItemPosition.first => leftPosition,
+      _ItemPosition.inBetween ||
+      _ItemPosition.last =>
+        leftPosition - _borderWidth,
+    };
   }
 
   double _width(double maxWidth) {
     final itemWidth = maxWidth / widget.listSize;
 
-    switch (_position) {
-      case _ItemPosition.first:
-        return itemWidth;
-      case _ItemPosition.inBetween:
-      case _ItemPosition.last:
-        return itemWidth + _borderWidth;
-    }
+    return switch (_position) {
+      _ItemPosition.first => itemWidth,
+      _ItemPosition.inBetween || _ItemPosition.last => itemWidth + _borderWidth,
+    };
   }
 
+  double get _borderWidth => context.tokens.borderWidth100;
+
   BorderRadiusGeometry get _borderRadius {
-    switch (_position) {
-      case _ItemPosition.first:
-        return const BorderRadius.only(
-          topLeft: borderRadius50,
-          bottomLeft: borderRadius50,
-        );
-      case _ItemPosition.inBetween:
-        return BorderRadius.zero;
-      case _ItemPosition.last:
-        return const BorderRadius.only(
-          topRight: borderRadius50,
-          bottomRight: borderRadius50,
-        );
-    }
+    final borderRadius = Radius.circular(tokens.borderRadius50);
+
+    return switch (_position) {
+      _ItemPosition.first => BorderRadius.only(
+          topLeft: borderRadius,
+          bottomLeft: borderRadius,
+        ),
+      _ItemPosition.inBetween => BorderRadius.zero,
+      _ItemPosition.last => BorderRadius.only(
+          topRight: borderRadius,
+          bottomRight: borderRadius,
+        ),
+    };
   }
 
   _ItemPosition get _position {
@@ -105,7 +102,8 @@ class _BorderWrapperState extends State<BorderWrapper> with ThemeGetter {
             Container(
               height: widget.size.value,
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(borderRadius50),
+                borderRadius:
+                    BorderRadius.circular(context.tokens.borderRadius50),
                 border: Border.all(color: theme.colors.neutral100),
               ),
               child: widget.child,
@@ -131,5 +129,3 @@ class _BorderWrapperState extends State<BorderWrapper> with ThemeGetter {
 }
 
 enum _ItemPosition { first, inBetween, last }
-
-const _borderWidth = 1;
