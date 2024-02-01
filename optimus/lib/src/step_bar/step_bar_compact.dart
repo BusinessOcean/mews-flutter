@@ -1,7 +1,6 @@
 import 'package:dfunc/dfunc.dart';
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/typography/presets.dart';
 import 'package:optimus/src/typography/typography.dart';
 
 /// The compact version of the OptimusStepBar that is using a modified vertical
@@ -219,8 +218,8 @@ class _CompactStepBarIndicator extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             OptimusTypography(
-              resolveStyle: (_) =>
-                  preset200s.copyWith(overflow: TextOverflow.ellipsis),
+              resolveStyle: (_) => tokens.bodyMediumStrong
+                  .copyWith(overflow: TextOverflow.ellipsis),
               maxLines: 1,
               child: Text(text),
             ),
@@ -437,7 +436,7 @@ class _AnimatedStepBarState extends State<_AnimatedStepBar> {
               child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: tokens.spacing100,
-                  vertical: _verticalSpacing,
+                  vertical: tokens.spacing150,
                 ),
                 child: Stack(
                   children: [
@@ -489,4 +488,3 @@ class _StepBarData extends InheritedWidget {
 }
 
 const double _itemHeight = 66;
-const double _verticalSpacing = 12;

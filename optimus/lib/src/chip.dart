@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
 import 'package:optimus/src/common/gesture_wrapper.dart';
-import 'package:optimus/src/typography/presets.dart';
 
 /// Chips are a visual representation of a keyword or phrase that the user has
 /// used for purposes of filtering the scope of content displayed in the
@@ -69,7 +68,7 @@ class _OptimusChipState extends State<OptimusChip> with ThemeGetter {
           onPressedChanged: _handlePressedChanged,
           onTap: widget.onTap,
           child: SizedBox(
-            height: _height,
+            height: tokens.sizing300,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 100),
               decoration: BoxDecoration(
@@ -88,7 +87,8 @@ class _OptimusChipState extends State<OptimusChip> with ThemeGetter {
                         horizontal: context.tokens.spacing50,
                       ),
                       child: DefaultTextStyle.merge(
-                        style: preset200r.copyWith(color: _foregroundColor),
+                        style:
+                            tokens.bodyMedium.copyWith(color: _foregroundColor),
                         child: widget.child,
                       ),
                     ),
@@ -96,7 +96,7 @@ class _OptimusChipState extends State<OptimusChip> with ThemeGetter {
                       onTap: widget.onRemoved,
                       child: Icon(
                         OptimusIcons.cross_close,
-                        size: 16,
+                        size: tokens.sizing200,
                         color: _foregroundColor,
                       ),
                     ),
@@ -108,5 +108,3 @@ class _OptimusChipState extends State<OptimusChip> with ThemeGetter {
         ),
       );
 }
-
-const _height = 24.0;

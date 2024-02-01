@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:optimus/src/theme/theme.dart';
-import 'package:optimus/src/typography/presets.dart';
 
 class BaseBadge extends StatelessWidget {
   const BaseBadge({
@@ -23,12 +22,13 @@ class BaseBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasText = text.isNotEmpty;
-    final tokens = OptimusTheme.of(context).tokens;
+    final tokens = context.tokens;
     final backgroundColor = this.backgroundColor ?? tokens.backgroundAccent;
     final textColor = this.textColor ?? tokens.textStaticInverse;
     final outlineColor = this.outlineColor ?? tokens.borderStaticInverse;
     final outlineSize = tokens.borderWidth200;
-    final bareHeight = text.isEmpty ? tokens.spacing100 : _badgeHeight;
+    final badgeHeight = tokens.sizing200;
+    final bareHeight = text.isEmpty ? tokens.spacing100 : badgeHeight;
     final outlinedHeight = bareHeight + outlineSize * 2;
     final height = outline ? outlinedHeight : bareHeight;
 
@@ -45,19 +45,13 @@ class BaseBadge extends StatelessWidget {
             maxLines: 1,
             overflow: overflow,
             textAlign: TextAlign.center,
-            style: baseTextStyle.copyWith(
-              fontSize: 11,
-              letterSpacing: 0.2,
-              height: 1,
-              fontWeight: FontWeight.w600,
-              color: textColor,
-            ),
+            style: tokens.bodyExtraSmallStrong.copyWith(color: textColor),
           )
         : null;
 
     return Container(
       constraints: BoxConstraints(
-        minWidth: hasText ? _badgeHeight : height,
+        minWidth: hasText ? badgeHeight : height,
         maxWidth: hasText ? double.infinity : height,
       ),
       height: height,
@@ -70,5 +64,3 @@ class BaseBadge extends StatelessWidget {
     );
   }
 }
-
-const _badgeHeight = 16.0;

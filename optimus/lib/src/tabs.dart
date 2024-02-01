@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
 import 'package:optimus/src/badge/base_badge.dart';
-import 'package:optimus/src/typography/presets.dart';
 
 class OptimusTab extends StatelessWidget {
   const OptimusTab({
@@ -31,14 +30,14 @@ class OptimusTab extends StatelessWidget {
           if (icon != null)
             Padding(
               padding: EdgeInsets.only(right: tokens.spacing50),
-              child: Icon(icon, size: 16),
+              child: Icon(icon, size: tokens.sizing200),
             ),
           Text(label, overflow: TextOverflow.ellipsis),
           if (badge case final badge?)
             Padding(
               padding: EdgeInsets.only(left: tokens.spacing50),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 32),
+                constraints: BoxConstraints(maxWidth: tokens.sizing400),
                 child: BaseBadge(text: badge, outline: false),
               ),
             ),
@@ -70,8 +69,8 @@ class OptimusTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle textStyle = preset200s;
     final tokens = OptimusTheme.of(context).tokens;
+    final textStyle = tokens.bodyMediumStrong;
 
     return DefaultTabController(
       length: tabs.length,

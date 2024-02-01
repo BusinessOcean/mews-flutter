@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/typography/presets.dart';
 
 enum OptimusBannerVariant {
   /// To display an informative message.
@@ -104,7 +103,7 @@ class OptimusBanner extends StatelessWidget {
                             : EdgeInsets.zero,
                         child: DefaultTextStyle.merge(
                           child: title,
-                          style: preset300s,
+                          style: tokens.bodyLarge,
                         ),
                       ),
                       if (description case final description?)
@@ -112,7 +111,7 @@ class OptimusBanner extends StatelessWidget {
                           padding: EdgeInsets.only(top: tokens.spacing50),
                           child: DefaultTextStyle.merge(
                             child: description,
-                            style: preset200r.copyWith(
+                            style: tokens.bodyMedium.copyWith(
                               color: _getDescriptionColor(theme),
                             ),
                           ),
@@ -204,32 +203,8 @@ class OptimusWideBanner extends StatelessWidget {
   /// Controls background color.
   final OptimusWideBannerVariant variant;
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = OptimusTheme.of(context);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(color: _backgroundColor(theme)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 18),
-              child: Icon(OptimusIcons.info, color: _color(theme)),
-            ),
-            DefaultTextStyle.merge(
-              child: content,
-              style: _contentTextStyle(theme),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   TextStyle _contentTextStyle(OptimusThemeData theme) =>
-      preset200s.merge(TextStyle(color: _color(theme), height: 1));
+      theme.tokens.bodyMedium.copyWith(color: _color(theme), height: 1);
 
   Color _backgroundColor(OptimusThemeData theme) => switch (variant) {
         OptimusWideBannerVariant.informative => theme.colors.primary500,
@@ -247,4 +222,31 @@ class OptimusWideBanner extends StatelessWidget {
   Color _color(OptimusThemeData theme) => theme.brightness == Brightness.light
       ? _lightColor(theme)
       : theme.colors.neutral1000;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = OptimusTheme.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(color: _backgroundColor(theme)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 10,
+        ), // TODO(witwash): check with design
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 18),
+              child: Icon(OptimusIcons.info, color: _color(theme)),
+            ),
+            DefaultTextStyle.merge(
+              child: content,
+              style: _contentTextStyle(theme),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

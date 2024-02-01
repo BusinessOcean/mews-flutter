@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
 import 'package:optimus/src/common/gesture_wrapper.dart';
 import 'package:optimus/src/common/group_wrapper.dart';
-import 'package:optimus/src/typography/presets.dart';
 
 /// The radio component is available in two size variants to accommodate
 /// different environments with different requirements.
@@ -92,8 +91,10 @@ class _OptimusRadioState<T> extends State<OptimusRadio<T>> with ThemeGetter {
       : theme.tokens.textDisabled;
 
   TextStyle get _labelStyle => switch (widget.size) {
-        OptimusRadioSize.small => preset200s.copyWith(color: _textColor),
-        OptimusRadioSize.large => preset300s.copyWith(color: _textColor),
+        OptimusRadioSize.small =>
+          tokens.bodyMediumStrong.copyWith(color: _textColor),
+        OptimusRadioSize.large =>
+          tokens.bodyLargeStrong.copyWith(color: _textColor),
       };
 
   void _handleHoverChanged(bool isHovering) =>
@@ -117,57 +118,59 @@ class _OptimusRadioState<T> extends State<OptimusRadio<T>> with ThemeGetter {
   }
 
   @override
-  Widget build(BuildContext context) => GroupWrapper(
-        error: widget.error,
-        isEnabled: widget.isEnabled,
-        child: IgnorePointer(
-          ignoring: !widget.isEnabled,
-          child: GestureWrapper(
-            onHoverChanged: _handleHoverChanged,
-            onPressedChanged: _handlePressedChanged,
-            onTap: _handleChanged,
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: _leadingSize,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: _RadioCircle(
-                      state: _state,
-                      isSelected: _isSelected,
-                    ),
+  Widget build(BuildContext context) {
+    final leadingSize = tokens.spacing400;
+
+    return GroupWrapper(
+      error: widget.error,
+      isEnabled: widget.isEnabled,
+      child: IgnorePointer(
+        ignoring: !widget.isEnabled,
+        child: GestureWrapper(
+          onHoverChanged: _handleHoverChanged,
+          onPressedChanged: _handlePressedChanged,
+          onTap: _handleChanged,
+          child: Stack(
+            children: [
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: leadingSize,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: _RadioCircle(
+                    state: _state,
+                    isSelected: _isSelected,
                   ),
                 ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minHeight: _leadingSize,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(width: _leadingSize),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.tokens.spacing25,
-                          ),
-                          child: DefaultTextStyle.merge(
-                            style: _labelStyle,
-                            child: widget.label,
-                          ),
+              ),
+              ConstrainedBox(
+                constraints: BoxConstraints(minHeight: leadingSize),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(width: leadingSize),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: tokens.spacing25,
+                        ),
+                        child: DefaultTextStyle.merge(
+                          style: _labelStyle,
+                          child: widget.label,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class _RadioCircle extends StatelessWidget {
@@ -182,6 +185,7 @@ class _RadioCircle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
+    final size = tokens.sizing200;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -191,12 +195,12 @@ class _RadioCircle extends StatelessWidget {
       ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
-        width: 16,
-        height: 16,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            width: isSelected ? _selectedBorder : context.tokens.borderWidth150,
+            width: isSelected ? _selectedBorder : tokens.borderWidth150,
             color: state.borderColor(context, isSelected: isSelected),
           ),
           color: state.circleFillColor(context),
@@ -236,5 +240,4 @@ extension on _RadioState {
       };
 }
 
-const double _leadingSize = 32;
 const double _selectedBorder = 6.0;

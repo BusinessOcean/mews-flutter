@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/typography/presets.dart';
 
 /// Tags are used to highlight an item’s status or make it easier to recognize
 /// certain items in data-dense content.
@@ -160,7 +159,7 @@ class _Tag extends StatelessWidget {
         borderRadius: BorderRadius.circular(tokens.borderRadius50),
       ),
       padding: EdgeInsets.symmetric(horizontal: tokens.spacing100),
-      height: 24,
+      height: tokens.sizing300,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -168,20 +167,28 @@ class _Tag extends StatelessWidget {
           if (leadingIcon != null)
             Padding(
               padding: EdgeInsets.only(right: tokens.spacing50),
-              child: Icon(leadingIcon, color: foregroundColor, size: 16),
+              child: Icon(
+                leadingIcon,
+                color: foregroundColor,
+                size: tokens.sizing200,
+              ),
             ),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 200),
             child: Text(
               text,
-              style: preset200r.copyWith(color: foregroundColor),
+              style: tokens.bodyMedium.copyWith(color: foregroundColor),
               overflow: TextOverflow.ellipsis,
             ),
           ),
           if (trailingIcon != null)
             Padding(
               padding: EdgeInsets.only(left: tokens.spacing50),
-              child: Icon(trailingIcon, color: foregroundColor, size: 16),
+              child: Icon(
+                trailingIcon,
+                color: foregroundColor,
+                size: tokens.sizing200,
+              ),
             ),
         ],
       ),

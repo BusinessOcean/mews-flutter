@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optimus/optimus.dart';
 import 'package:optimus/src/step_bar/common.dart';
-import 'package:optimus/src/typography/presets.dart';
 import 'package:optimus/src/typography/typography.dart';
 
 /// Both types of step have dedicated states. State is shown through a visual
@@ -81,14 +80,16 @@ class StepBarItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   OptimusTypography(
-                    resolveStyle: (_) =>
-                        preset200b.copyWith(overflow: TextOverflow.ellipsis),
+                    resolveStyle: (_) => tokens.bodyMedium.copyWith(
+                      overflow: TextOverflow.ellipsis,
+                      fontWeight: FontWeight.w700,
+                    ),
                     maxLines: 1,
                     child: item.label,
                   ),
                   if (description != null)
                     OptimusTypography(
-                      resolveStyle: (_) => preset200s.copyWith(
+                      resolveStyle: (_) => tokens.bodyMediumStrong.copyWith(
                         overflow: TextOverflow.ellipsis,
                       ),
                       color: OptimusTypographyColor.secondary,
@@ -120,7 +121,7 @@ class StepBarItemIconIndicator extends StatelessWidget {
 
   Color _color(OptimusThemeData theme) =>
       state == OptimusStepBarItemState.active
-          ? theme.colors.primary500t8
+          ? theme.colors.primary500t8 // TODO(witwash): replace with tokens
           : Colors.transparent;
 
   IconData get _icon =>
@@ -153,6 +154,7 @@ class StepBarItemNumberIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.tokens;
     final theme = OptimusTheme.of(context);
+    final iconSize = tokens.sizing300;
 
     return state == OptimusStepBarItemState.completed
         ? SizedBox(
@@ -177,8 +179,8 @@ class StepBarItemNumberIndicator extends StatelessWidget {
                     : null,
               ),
               Container(
-                width: 24,
-                height: 24,
+                width: iconSize,
+                height: iconSize,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: state.iconBackgroundColor(theme),
@@ -186,8 +188,12 @@ class StepBarItemNumberIndicator extends StatelessWidget {
                 child: Center(
                   child: Text(
                     text,
-                    style: preset200b.merge(
-                      TextStyle(height: 1, color: state.textColor(theme)),
+                    style: tokens.bodyMedium.merge(
+                      TextStyle(
+                        height: 1,
+                        color: state.textColor(theme),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -218,7 +224,7 @@ class StepBarSpacer extends StatelessWidget {
     return switch (layout) {
       Axis.horizontal => Flexible(
           child: Container(
-            constraints: const BoxConstraints(minWidth: spacerMinWidth),
+            constraints: BoxConstraints(minWidth: tokens.sizing200),
             height: _spacerThickness,
             color: color,
           ),
@@ -230,7 +236,7 @@ class StepBarSpacer extends StatelessWidget {
             top: tokens.spacing100,
           ),
           child: SizedBox(
-            height: _spacerHeight,
+            height: tokens.sizing200,
             width: _spacerThickness,
             child: Container(color: color),
           ),
@@ -272,5 +278,4 @@ extension OptimusStepBarItemTheme on OptimusStepBarItemState {
       this == OptimusStepBarItemState.active;
 }
 
-const double _spacerHeight = 16;
 const double _spacerThickness = 1;

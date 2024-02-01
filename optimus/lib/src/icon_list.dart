@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optimus/optimus.dart';
-import 'package:optimus/src/typography/presets.dart';
 
 /// The icon list component serves as a static, non-interactable option and is
 /// used when you need to show an icon with a label and/or optional description.
@@ -33,7 +32,8 @@ class OptimusIconList extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       itemBuilder: (_, index) => _ListTile(item: items[index], size: size),
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
+      separatorBuilder: (context, index) =>
+          SizedBox(height: context.tokens.spacing200),
     );
   }
 
@@ -98,24 +98,35 @@ class _ListTile extends StatelessWidget {
   final OptimusIconListItem item;
   final OptimusIconListSize size;
 
+  TextStyle _getLabelStyle(OptimusTokens tokens) => switch (size) {
+        OptimusIconListSize.large => tokens.bodyLargeStrong,
+        OptimusIconListSize.small => tokens.bodyMediumStrong,
+      };
+
+  TextStyle _getDescriptionStyle(OptimusTokens tokens) => switch (size) {
+        OptimusIconListSize.large => tokens.bodyMediumStrong,
+        OptimusIconListSize.small => tokens.bodySmallStrong,
+      };
+
   @override
   Widget build(BuildContext context) {
     final description = item.description;
     final theme = OptimusTheme.of(context);
+    final tokens = context.tokens;
 
     return Row(
       children: [
         OptimusIcon(iconData: item.iconData, colorOption: item.colorOption),
         Padding(
-          padding: const EdgeInsets.only(left: 16),
+          padding: EdgeInsets.only(left: tokens.spacing200),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(item.label.capitalize(), style: _labelStyle),
+              Text(item.label.capitalize(), style: _getLabelStyle(tokens)),
               if (description != null && description.isNotEmpty)
                 Text(
                   description.capitalize(),
-                  style: _descriptionStyle.copyWith(
+                  style: _getDescriptionStyle(tokens).copyWith(
                     color: theme.isDark
                         ? theme.colors.neutral0t64
                         : theme.colors.neutral1000t64,
@@ -127,16 +138,6 @@ class _ListTile extends StatelessWidget {
       ],
     );
   }
-
-  TextStyle get _labelStyle => switch (size) {
-        OptimusIconListSize.large => preset300s,
-        OptimusIconListSize.small => preset200s,
-      };
-
-  TextStyle get _descriptionStyle => switch (size) {
-        OptimusIconListSize.large => preset200s,
-        OptimusIconListSize.small => preset100s,
-      };
 }
 
 extension on String {
