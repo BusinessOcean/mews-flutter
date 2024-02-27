@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:storybook/stories/alert.dart';
 import 'package:storybook/stories/avatar.dart';
 import 'package:storybook/stories/badge.dart';
 import 'package:storybook/stories/banner.dart';
@@ -57,7 +58,6 @@ import 'package:storybook/stories/typography/label.dart';
 import 'package:storybook/stories/typography/paragraph.dart';
 import 'package:storybook/stories/typography/title.dart';
 import 'package:storybook/stories/welcome.dart';
-import 'package:storybook/stories/wide_banner.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 void main() => runApp(const MyApp());
@@ -96,6 +96,13 @@ class _MyAppState extends State<MyApp> {
                 ),
                 DeviceFramePlugin(),
               ],
+              wrapperBuilder: (BuildContext _, Widget? child) => MaterialApp(
+                theme: ThemeData.light()
+                    .copyWith(scaffoldBackgroundColor: Colors.white),
+                darkTheme: ThemeData.dark(),
+                debugShowCheckedModeBanner: false,
+                home: Scaffold(body: Center(child: child)),
+              ),
               initialStory: 'Welcome',
               stories: [
                 welcomeStory,
@@ -118,11 +125,10 @@ class _MyAppState extends State<MyApp> {
                 spacingStory,
                 tagStory,
                 bannerStory,
-                wideBannerStory,
+                alertStory,
                 allIconsStory,
                 iconStory,
                 logoStory,
-                supplementaryIconStory,
                 iconListStory,
                 cardStory,
                 nestedCardStory,

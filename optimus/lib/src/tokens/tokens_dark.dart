@@ -3,7 +3,7 @@
 //
 
 // Do not edit directly
-// Generated on Wed, 06 Dec 2023 13:12:52 GMT
+// Generated on Tue, 27 Feb 2024 10:40:20 GMT
 
 import 'dart:ui';
 import 'package:flutter/widgets.dart';
@@ -59,6 +59,8 @@ class DesignTokensDark {
   static const Color backgroundStaticFlat = Color(0xFF12121A);
   static const Color backgroundStaticFloating = Color(0xFF1A1A24);
   static const Color backgroundStaticInverse = Color(0xFFFFFFFF);
+  static const Color backgroundStaticInverseOnColor = Color(0xFFE1E1EA);
+  static const Color backgroundStaticOnColor = Color(0xFFFFFFFF);
   static const Color backgroundStaticRaised = Color(0xFF16161F);
   static const Color backgroundStaticSunken = Color(0xFF000000);
   static const Color borderAlertBasic = Color(0xFF53536D);
@@ -301,6 +303,7 @@ class DesignTokensDark {
 
   static const TextStyle bodyExtraSmall = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w400,
     height: 1,
     fontSize: 11,
@@ -309,6 +312,7 @@ class DesignTokensDark {
   );
   static const TextStyle bodyExtraSmallStrong = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w500,
     height: 1,
     fontSize: 11,
@@ -317,6 +321,7 @@ class DesignTokensDark {
   );
   static const TextStyle bodyLarge = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w400,
     height: 1.5,
     fontSize: 16,
@@ -324,6 +329,7 @@ class DesignTokensDark {
   );
   static const TextStyle bodyLargeStrong = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w500,
     height: 1.5,
     fontSize: 16,
@@ -331,6 +337,7 @@ class DesignTokensDark {
   );
   static const TextStyle bodyMedium = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w400,
     height: 1.5,
     fontSize: 14,
@@ -338,6 +345,7 @@ class DesignTokensDark {
   );
   static const TextStyle bodyMediumStrong = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w500,
     height: 1.5,
     fontSize: 14,
@@ -345,6 +353,7 @@ class DesignTokensDark {
   );
   static const TextStyle bodySmall = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w400,
     height: 1.5,
     fontSize: 12,
@@ -352,6 +361,7 @@ class DesignTokensDark {
   );
   static const TextStyle bodySmallStrong = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w500,
     height: 1.5,
     fontSize: 12,
@@ -359,6 +369,7 @@ class DesignTokensDark {
   );
   static const TextStyle highlightLarge = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w500,
     height: 1.3,
     fontSize: 36,
@@ -367,6 +378,7 @@ class DesignTokensDark {
   );
   static const TextStyle highlightMedium = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w500,
     height: 1.3,
     fontSize: 25,
@@ -375,6 +387,7 @@ class DesignTokensDark {
   );
   static const TextStyle highlightSmall = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w500,
     height: 1.3,
     fontSize: 18,
@@ -382,6 +395,7 @@ class DesignTokensDark {
   );
   static const TextStyle titleLarge = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w400,
     height: 1.5,
     fontSize: 22,
@@ -389,6 +403,7 @@ class DesignTokensDark {
   );
   static const TextStyle titleLargeStrong = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w600,
     height: 1.5,
     fontSize: 22,
@@ -396,6 +411,7 @@ class DesignTokensDark {
   );
   static const TextStyle titleMedium = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w400,
     height: 1.5,
     fontSize: 20,
@@ -403,6 +419,7 @@ class DesignTokensDark {
   );
   static const TextStyle titleMediumStrong = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w600,
     height: 1.5,
     fontSize: 20,
@@ -410,6 +427,7 @@ class DesignTokensDark {
   );
   static const TextStyle titleSmall = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w400,
     height: 1.3,
     fontSize: 18,
@@ -417,6 +435,7 @@ class DesignTokensDark {
   );
   static const TextStyle titleSmallStrong = TextStyle(
     fontFamily: 'Inter',
+    package: fontPackage,
     fontWeight: FontWeight.w600,
     height: 1.3,
     fontSize: 18,
@@ -490,6 +509,7 @@ class DesignTokensDark {
   static const double spacing450 = 36;
   static const double spacing50 = 4;
   static const double spacing500 = 40;
+  static const double spacing600 = 48;
   static const double spacing700 = 56;
   static const double spacing900 = 72;
   static const double spacingBase = 8;
@@ -582,4 +602,5 @@ class DesignTokensDark {
     FontFeature('cv10'),
     FontFeature('zero'),
   ];
+  static const String fontPackage = 'optimus';
 }

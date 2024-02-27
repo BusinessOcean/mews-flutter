@@ -78,7 +78,7 @@ class _OptimusIconButtonState extends State<OptimusIconButton>
                     width: context.tokens.borderWidth100,
                   )
                 : null,
-            borderRadius: BorderRadius.circular(context.tokens.borderRadius50),
+            borderRadius: BorderRadius.circular(context.tokens.borderRadius100),
           ),
           duration: buttonAnimationDuration,
           child: IconTheme.merge(
@@ -104,10 +104,9 @@ extension on OptimusWidgetSize {
         OptimusWidgetSize.small => tokens.sizing400,
         OptimusWidgetSize.medium => tokens.sizing500,
         OptimusWidgetSize.large => tokens.sizing600,
+        OptimusWidgetSize.extraLarge => tokens.sizing700,
       };
 
-  double getIconSize(OptimusTokens tokens) => switch (this) {
-        OptimusWidgetSize.small => tokens.sizing200,
-        OptimusWidgetSize.medium || OptimusWidgetSize.large => tokens.sizing300,
-      };
+  double getIconSize(OptimusTokens tokens) =>
+      this == OptimusWidgetSize.small ? tokens.sizing200 : tokens.sizing300;
 }

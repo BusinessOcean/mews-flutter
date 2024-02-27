@@ -11,7 +11,7 @@ class BaseDropDownButton<T> extends StatefulWidget {
     required this.items,
     this.onItemSelected,
     this.size = OptimusWidgetSize.large,
-    this.variant = OptimusDropdownButtonVariant.defaultButton,
+    this.variant = OptimusDropdownButtonVariant.tertiary,
     this.borderRadius,
   });
 
@@ -102,7 +102,7 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
     final child = widget.child;
     final borderColor = this._borderColor;
     final borderRadius = widget.borderRadius ??
-        BorderRadius.circular(context.tokens.borderRadius50);
+        BorderRadius.circular(context.tokens.borderRadius100);
 
     return OverlayController(
       items: widget.items,
@@ -170,8 +170,6 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
 const double _dropdownWidth = 280;
 
 extension on OptimusWidgetSize {
-  double getIconSize(OptimusTokens tokens) => switch (this) {
-        OptimusWidgetSize.small => tokens.sizing200,
-        OptimusWidgetSize.medium || OptimusWidgetSize.large => tokens.sizing300,
-      };
+  double getIconSize(OptimusTokens tokens) =>
+      this == OptimusWidgetSize.small ? tokens.sizing200 : tokens.sizing300;
 }
