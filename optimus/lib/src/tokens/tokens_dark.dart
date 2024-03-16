@@ -3,15 +3,15 @@
 //
 
 // Do not edit directly
-// Generated on Tue, 27 Feb 2024 10:40:20 GMT
+// Generated on Mon, 11 Mar 2024 18:37:42 GMT
 
-import 'dart:ui';
 import 'package:flutter/widgets.dart';
 
 class DesignTokensDark {
   const DesignTokensDark._();
 
-  static const Color backgroundAccent = Color(0xFF7A78F6);
+  static const Color backgroundAccentPrimary = Color(0xFF7A78F6);
+  static const Color backgroundAccentSecondary = Color(0xFFFA5F69);
   static const Color backgroundAlertBasicPrimary = Color(0xFF8D8DAC);
   static const Color backgroundAlertBasicSecondary = Color(0xFF22222E);
   static const Color backgroundAlertDangerPrimary = Color(0xFFEC5C5C);
@@ -59,7 +59,7 @@ class DesignTokensDark {
   static const Color backgroundStaticFlat = Color(0xFF12121A);
   static const Color backgroundStaticFloating = Color(0xFF1A1A24);
   static const Color backgroundStaticInverse = Color(0xFFFFFFFF);
-  static const Color backgroundStaticInverseOnColor = Color(0xFFE1E1EA);
+  static const Color backgroundStaticInverseOnColor = Color(0xFF1A1A24);
   static const Color backgroundStaticOnColor = Color(0xFFFFFFFF);
   static const Color backgroundStaticRaised = Color(0xFF16161F);
   static const Color backgroundStaticSunken = Color(0xFF000000);
@@ -83,6 +83,7 @@ class DesignTokensDark {
   static const Color borderStaticOnColor = Color(0xFFFFFFFF);
   static const Color borderStaticPrimary = Color(0xFF424258);
   static const Color borderStaticSecondary = Color(0xFF323243);
+  static const Color borderStaticTertiary = Color(0xFF53536D);
   static const Color legacyDatavizDenim100 = Color(0xFF1D5E99);
   static const Color legacyDatavizDenim200 = Color(0xFF2368A2);
   static const Color legacyDatavizDenim300 = Color(0xFF2973AB);
@@ -486,6 +487,7 @@ class DesignTokensDark {
   static const double opacity600 = 0.48;
   static const double opacity800 = 0.64;
   static const double sizing100 = 8;
+  static const double sizing1300 = 104;
   static const double sizing200 = 16;
   static const double sizing300 = 24;
   static const double sizing400 = 32;
