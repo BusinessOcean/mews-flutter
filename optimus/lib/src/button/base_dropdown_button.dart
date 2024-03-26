@@ -101,11 +101,12 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
   Widget build(BuildContext context) {
     final child = widget.child;
     final borderColor = this._borderColor;
-    final borderRadius = widget.borderRadius ??
-        BorderRadius.circular(context.tokens.borderRadius100);
+    final borderRadius =
+        widget.borderRadius ?? BorderRadius.all(tokens.borderRadius100);
 
     return OverlayController(
       items: widget.items,
+      size: widget.size,
       anchorKey: _selectFieldKey,
       onItemSelected: widget.onItemSelected ?? (_) {},
       focusNode: _node,
@@ -131,7 +132,7 @@ class _BaseDropDownButtonState<T> extends State<BaseDropDownButton<T>>
                   border: borderColor != null
                       ? Border.all(
                           color: borderColor,
-                          width: context.tokens.borderWidth150,
+                          width: tokens.borderWidth150,
                         )
                       : null,
                 ),
