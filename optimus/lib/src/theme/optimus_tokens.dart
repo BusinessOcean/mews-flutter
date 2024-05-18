@@ -10,7 +10,7 @@ import 'package:theme_tailor_annotation/theme_tailor_annotation.dart';
 //
 
 // Do not edit directly
-// Generated on Fri, 15 Mar 2024 12:25:57 GMT
+// Generated on Mon, 29 Apr 2024 23:33:30 GMT
 
 part 'optimus_tokens.tailor.dart';
 
@@ -18,8 +18,14 @@ part 'optimus_tokens.tailor.dart';
 class OptimusTokens extends ThemeExtension<OptimusTokens>
     with _$OptimusTokensTailorMixin {
   const OptimusTokens({
+    required this.backgroundAccentBrand,
+    required this.backgroundAccentDanger,
+    required this.backgroundAccentGradient,
+    required this.backgroundAccentInfo,
     required this.backgroundAccentPrimary,
     required this.backgroundAccentSecondary,
+    required this.backgroundAccentSuccess,
+    required this.backgroundAccentWarning,
     required this.backgroundAlertBasicPrimary,
     required this.backgroundAlertBasicSecondary,
     required this.backgroundAlertDangerPrimary,
@@ -67,6 +73,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     required this.backgroundStaticOnColor,
     required this.backgroundStaticRaised,
     required this.backgroundStaticSunken,
+    required this.borderAccent,
     required this.borderAlertBasic,
     required this.borderAlertDanger,
     required this.borderAlertInfo,
@@ -375,6 +382,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     required this.sizing550,
     required this.sizing600,
     required this.sizing700,
+    required this.sizing800,
     required this.sizing900,
     required this.sizingBase,
     required this.spacing0,
@@ -392,6 +400,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     required this.spacing500,
     required this.spacing600,
     required this.spacing700,
+    required this.spacing800,
     required this.spacing900,
     required this.spacingBase,
     required this.focusOffset,
@@ -408,9 +417,21 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
   });
 
   @override
+  final Color backgroundAccentBrand;
+  @override
+  final Color backgroundAccentDanger;
+  @override
+  final Color backgroundAccentGradient;
+  @override
+  final Color backgroundAccentInfo;
+  @override
   final Color backgroundAccentPrimary;
   @override
   final Color backgroundAccentSecondary;
+  @override
+  final Color backgroundAccentSuccess;
+  @override
+  final Color backgroundAccentWarning;
   @override
   final Color backgroundAlertBasicPrimary;
   @override
@@ -505,6 +526,8 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
   final Color backgroundStaticRaised;
   @override
   final Color backgroundStaticSunken;
+  @override
+  final Color borderAccent;
   @override
   final Color borderAlertBasic;
   @override
@@ -1125,6 +1148,8 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
   @override
   final double sizing700;
   @override
+  final double sizing800;
+  @override
   final double sizing900;
   @override
   final double sizingBase;
@@ -1159,6 +1184,8 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
   @override
   final double spacing700;
   @override
+  final double spacing800;
+  @override
   final double spacing900;
   @override
   final double spacingBase;
@@ -1190,8 +1217,14 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
   final TextDecoration textDecorationUnderline;
 
   static const OptimusTokens light = OptimusTokens(
+    backgroundAccentBrand: DesignTokensLight.backgroundAccentBrand,
+    backgroundAccentDanger: DesignTokensLight.backgroundAccentDanger,
+    backgroundAccentGradient: DesignTokensLight.backgroundAccentGradient,
+    backgroundAccentInfo: DesignTokensLight.backgroundAccentInfo,
     backgroundAccentPrimary: DesignTokensLight.backgroundAccentPrimary,
     backgroundAccentSecondary: DesignTokensLight.backgroundAccentSecondary,
+    backgroundAccentSuccess: DesignTokensLight.backgroundAccentSuccess,
+    backgroundAccentWarning: DesignTokensLight.backgroundAccentWarning,
     backgroundAlertBasicPrimary: DesignTokensLight.backgroundAlertBasicPrimary,
     backgroundAlertBasicSecondary:
         DesignTokensLight.backgroundAlertBasicSecondary,
@@ -1269,6 +1302,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     backgroundStaticOnColor: DesignTokensLight.backgroundStaticOnColor,
     backgroundStaticRaised: DesignTokensLight.backgroundStaticRaised,
     backgroundStaticSunken: DesignTokensLight.backgroundStaticSunken,
+    borderAccent: DesignTokensLight.borderAccent,
     borderAlertBasic: DesignTokensLight.borderAlertBasic,
     borderAlertDanger: DesignTokensLight.borderAlertDanger,
     borderAlertInfo: DesignTokensLight.borderAlertInfo,
@@ -1586,6 +1620,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     sizing550: DesignTokensLight.sizing550,
     sizing600: DesignTokensLight.sizing600,
     sizing700: DesignTokensLight.sizing700,
+    sizing800: DesignTokensLight.sizing800,
     sizing900: DesignTokensLight.sizing900,
     sizingBase: DesignTokensLight.sizingBase,
     spacing0: DesignTokensLight.spacing0,
@@ -1603,6 +1638,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     spacing500: DesignTokensLight.spacing500,
     spacing600: DesignTokensLight.spacing600,
     spacing700: DesignTokensLight.spacing700,
+    spacing800: DesignTokensLight.spacing800,
     spacing900: DesignTokensLight.spacing900,
     spacingBase: DesignTokensLight.spacingBase,
     focusOffset: DesignTokensLight.focusOffset,
@@ -1619,8 +1655,14 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
   );
 
   static const OptimusTokens dark = OptimusTokens(
+    backgroundAccentBrand: DesignTokensDark.backgroundAccentBrand,
+    backgroundAccentDanger: DesignTokensDark.backgroundAccentDanger,
+    backgroundAccentGradient: DesignTokensDark.backgroundAccentGradient,
+    backgroundAccentInfo: DesignTokensDark.backgroundAccentInfo,
     backgroundAccentPrimary: DesignTokensDark.backgroundAccentPrimary,
     backgroundAccentSecondary: DesignTokensDark.backgroundAccentSecondary,
+    backgroundAccentSuccess: DesignTokensDark.backgroundAccentSuccess,
+    backgroundAccentWarning: DesignTokensDark.backgroundAccentWarning,
     backgroundAlertBasicPrimary: DesignTokensDark.backgroundAlertBasicPrimary,
     backgroundAlertBasicSecondary:
         DesignTokensDark.backgroundAlertBasicSecondary,
@@ -1696,6 +1738,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     backgroundStaticOnColor: DesignTokensDark.backgroundStaticOnColor,
     backgroundStaticRaised: DesignTokensDark.backgroundStaticRaised,
     backgroundStaticSunken: DesignTokensDark.backgroundStaticSunken,
+    borderAccent: DesignTokensDark.borderAccent,
     borderAlertBasic: DesignTokensDark.borderAlertBasic,
     borderAlertDanger: DesignTokensDark.borderAlertDanger,
     borderAlertInfo: DesignTokensDark.borderAlertInfo,
@@ -2010,6 +2053,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     sizing550: DesignTokensDark.sizing550,
     sizing600: DesignTokensDark.sizing600,
     sizing700: DesignTokensDark.sizing700,
+    sizing800: DesignTokensDark.sizing800,
     sizing900: DesignTokensDark.sizing900,
     sizingBase: DesignTokensDark.sizingBase,
     spacing0: DesignTokensDark.spacing0,
@@ -2027,6 +2071,7 @@ class OptimusTokens extends ThemeExtension<OptimusTokens>
     spacing500: DesignTokensDark.spacing500,
     spacing600: DesignTokensDark.spacing600,
     spacing700: DesignTokensDark.spacing700,
+    spacing800: DesignTokensDark.spacing800,
     spacing900: DesignTokensDark.spacing900,
     spacingBase: DesignTokensDark.spacingBase,
     focusOffset: DesignTokensDark.focusOffset,

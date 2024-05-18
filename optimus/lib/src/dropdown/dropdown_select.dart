@@ -106,7 +106,6 @@ class _DropdownSelectState<T> extends State<DropdownSelect<T>> {
   TextEditingController get _effectiveController =>
       widget.controller ?? (_controller ??= TextEditingController());
 
-  // ignore: dispose-fields, disposed in _removeOverlay
   OverlayEntry? _overlayEntry;
 
   @override
@@ -396,12 +395,7 @@ class _Trailing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = isUpdating
-        ? [
-            const OptimusCircleLoader(
-              size: OptimusCircleLoaderSize.small,
-              variant: OptimusCircleLoaderVariant.indeterminate(),
-            ),
-          ]
+        ? [const OptimusSpinner(size: OptimusSpinnerSize.small)]
         : [
             if (trailing case final trailing?) trailing,
             if (trailingImplicit case final trailingImplicit?) trailingImplicit,

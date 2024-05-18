@@ -52,6 +52,7 @@ class OptimusInputField extends StatefulWidget {
     this.enableIMEPersonalizedLearning = true,
     this.enableSuggestions = true,
     this.inline = false,
+    this.statusBarState,
   });
 
   /// {@macro flutter.widgets.editableText.onChanged}
@@ -134,7 +135,7 @@ class OptimusInputField extends StatefulWidget {
   /// {@macro flutter.widgets.editableText.showCursor}
   final bool? showCursor;
 
-  /// If true, displays [OptimusCircleLoader].
+  /// If true, displays [OptimusSpinner].
   final bool showLoader;
 
   /// {@macro flutter.widgets.editableText.inputFormatters}
@@ -159,6 +160,8 @@ class OptimusInputField extends StatefulWidget {
   /// outside, wrapping it. The inline variant is more dense and is smaller in
   /// the vertical direction.
   final bool inline;
+
+  final OptimusStatusBarState? statusBarState;
 
   bool get hasError {
     final error = this.error;
@@ -222,6 +225,9 @@ class _OptimusInputFieldState extends State<OptimusInputField>
 
   bool get _shouldShowPrefix => widget.leading != null || widget.prefix != null;
 
+  bool get _isPasswordToggleVisible =>
+      widget.isPasswordField && !widget.showLoader;
+
   void _handleStateUpdate() => setState(() {});
 
   void _handlePasswordTap() => setState(
@@ -254,6 +260,7 @@ class _OptimusInputFieldState extends State<OptimusInputField>
       isRequired: widget.isRequired,
       inline: widget.inline,
       inputCounter: counter,
+      statusBarState: widget.statusBarState,
       prefix: _shouldShowPrefix
           ? Prefix(prefix: widget.prefix, leading: widget.leading)
           : null,
@@ -262,7 +269,7 @@ class _OptimusInputFieldState extends State<OptimusInputField>
               suffix: widget.suffix,
               trailing: widget.trailing,
               counter: widget.inline ? counter : null,
-              passwordButton: widget.isPasswordField
+              passwordButton: _isPasswordToggleVisible
                   ? _PasswordButton(
                       onTap: _handlePasswordTap,
                       isEnabled: _isShowPasswordEnabled,
